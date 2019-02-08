@@ -1,9 +1,11 @@
 {
-    "name": "benjacho/BelongsToManyField",
+    "name": "benjacho/belongs-to-many-field",
     "description": "belongsToMany nova representation in field.",
     "keywords": [
         "laravel",
-        "nova"
+        "nova",
+        "belongsToMany",
+        "Many to Many Field"
     ],
     "license": "MIT",
     "require": {
