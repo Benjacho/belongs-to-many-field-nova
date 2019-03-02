@@ -30,11 +30,13 @@ class BelongsToManyField extends Field
 
     public function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
     {
-        $requestValue = json_decode($request[$requestAttribute]);
-        $class = get_class($model);
-        $class::saved(function ($model) use ($requestValue, $attribute) {
-            $model->syncManyValues($requestValue, $attribute, $this->relationModel);
-        });
+        if (strlen($request[$requestAttribute]) > 2) {
+            $requestValue = json_decode($request[$requestAttribute]);
+            $class = get_class($model);
+            $class::saved(function ($model) use ($requestValue, $attribute) {
+                $model->syncManyValues($requestValue, $attribute, $this->relationModel);
+            });
+        }
     }
 
     public function resolve($resource, $attribute = null)
