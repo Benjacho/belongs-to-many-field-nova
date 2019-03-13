@@ -15,8 +15,9 @@ composer require benjacho/belongs-to-many-field
 First of all use the trait in the model that you want to attach example User, user want to attach roles
 
 ```php
+    use Benjacho\BelongsToManyField\HasBelongsToMany;
+
     class User extends Model {
-        use Benjacho\BelongsToManyField\HasBelongsToMany;
         use HasBelongsToMany;
     }
 ```
