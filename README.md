@@ -2,28 +2,43 @@
 
 Belongs To Many field to represent many to many relationship in field. This Field allow attaching relationships easily, you can pass query to the Multiple Select.
 
-![alt text](https://raw.githubusercontent.com/benjacho/belongs-to-many-field-nova/master/src/image.png)
+![image](https://user-images.githubusercontent.com/11976865/54318738-46290000-45b5-11e9-8ea0-941adb4b79ba.png)
 
 
-<h1 align="center">INSTALLATION</h1>
-<p>composer require benjacho/belongs-to-many-field</p>
+### Installation
+```bash
+composer require benjacho/belongs-to-many-field
+```
 
-<h1 align="center">USING IT (EXAMPLE)</h1>
+### Usage
 
-<p>- First of all use it as normal Field you nees to pass two options,  one options is the data inside of the select, second option is the model that is relationed</p>
-<p>- Use it in the Resource that you need to sync options</p>
-
+First of all use the trait in the model that you want to attach example User, user want to attach roles
 
 ```php
-    use Benjacho\BelongsToManyField\HasBelongsToMany;
-
-    use HasBelongsToMany;
+    class User extends Model {
+        use Benjacho\BelongsToManyField\HasBelongsToMany;
+        use HasBelongsToMany;
+    }
 ```
+Then in the resource you need to pass:
+- Method make (label, many to many relationship, Nova Resource Relationship) 
+- Method options (Here you pass option that you need to render in Multiple Select, you can pass Querys, use get() method for that purpose)
+- Method relationModel (Here is a trick to pass the relation that you want to bind) Example User
+- You need to pass onlyOnForms only to create/edit functionality
+
 
 ```php
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Tipo de Gasto', 'expenseTypes', 'App\Nova\ExpenseType')->options(\App\ExpenseType::all())->relationModel(\App\ExpenseType::class)->onlyOnForms(),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class)->onlyOnForms(),
 }
 ```
+
+###TODO
+Only display onforms by default, implement validations, implement custom rules
+
+###CONTRIBUTING
+-Pull Requests
+-Issues
+-Contact me: christianbfc97@gmail.com
