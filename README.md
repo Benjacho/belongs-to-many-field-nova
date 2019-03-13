@@ -1,5 +1,9 @@
-# belongs-to-many-field-nova
-Belongs To Many field Laravel nova to represent many to many relationship in field.
+# Belongs To Many Field Nova
+
+Belongs To Many field to represent many to many relationship in field. This Field allow attaching relationships easily, you can pass query to the Multiple Select.
+
+![alt text](https://raw.githubusercontent.com/benjacho/belongs-to-many-field-nova/master/src/image.png)
+
 
 <h1 align="center">INSTALLATION</h1>
 <p>composer require benjacho/belongs-to-many-field</p>
