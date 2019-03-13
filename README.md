@@ -35,10 +35,10 @@ public function fields(Request $request){
 }
 ```
 
-###TODO
+### Todo
 Only display onforms by default, implement validations, implement custom rules
 
-###CONTRIBUTING
+### Contributing
 -Pull Requests
 -Issues
 -Contact me: christianbfc97@gmail.com
