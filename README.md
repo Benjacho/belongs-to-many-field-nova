@@ -25,14 +25,13 @@ Then in the resource you need to pass:
 - Method make (label, many to many relationship, Nova Resource Relationship) 
 - Method options (Here you pass option that you need to render in Multiple Select, you can pass Querys, use get() method for that purpose)
 - Method relationModel (Here is a trick to pass the relation that you want to bind) Example User
-- You need to pass onlyOnForms only to create/edit functionality
-
+- You dont need to pass onlyOnForms(), it is by default.
 
 ```php
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class)->onlyOnForms(),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class),
 }
 ```
 
