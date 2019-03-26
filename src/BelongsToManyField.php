@@ -7,11 +7,15 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class BelongsToManyField extends Field
 {
+    
+    public $showOnIndex = false;
+    public $showOnDetail = false;
     /**
      * The field's component.
      *
      * @var string
      */
+    
     public $component = 'BelongsToManyField';
 
     public $relationModel;
