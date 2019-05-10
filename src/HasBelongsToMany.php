@@ -18,10 +18,10 @@ trait HasBelongsToMany
         $model = app($relationModel);
         return $this->belongsToMany($model);
     }
-
-    public function syncManyValues($values, $attribute, $relationModel)
-    {
-        $arrayIds = array_column($values, 'id');
-        $this->model($relationModel)->sync($arrayIds);
-    }
+	
+	public function syncManyValues($values, $attribute, $relationModel)
+	{
+		$arrayIds = array_column($values, 'id');
+		$this->$attribute()->sync($arrayIds);
+	}
 }
