@@ -12,6 +12,8 @@ composer require benjacho/belongs-to-many-field
 
 ### Usage
 
+To use in nova 1.0 use 0.3 in nova 2.0 use 0.4 and above.
+
 First of all use the trait in the model that you want to attach example User, user want to attach roles
 
 ```php
