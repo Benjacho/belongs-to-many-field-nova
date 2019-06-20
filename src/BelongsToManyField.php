@@ -14,9 +14,9 @@ class BelongsToManyField extends Field
      *
      * @var string
      */
-    
+
     public $component = 'BelongsToManyField';
-    
+
     public $relationModel;
 
     /**
@@ -38,13 +38,18 @@ class BelongsToManyField extends Field
         $options = collect($options);
         return $this->withMeta(['options' => $options]);
     }
-    
+
+    public function column(string $column)
+    {
+        return $this->withMeta(['column' => $column]);
+    }
+
     public function relationModel($model)
     {
         $this->relationModel = $model;
         return $this;
     }
-    
+
     public function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
     {
         $requestValue = strlen($request[$requestAttribute]) > 2 ? json_decode($request[$requestAttribute]) : [];
@@ -53,7 +58,7 @@ class BelongsToManyField extends Field
             $model->syncManyValues($requestValue, $attribute, $this->relationModel);
         });
     }
-    
+
     public function resolve($resource, $attribute = null)
     {
         parent::resolve($resource, $attribute);
