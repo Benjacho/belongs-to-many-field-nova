@@ -4,6 +4,7 @@ namespace Benjacho\BelongsToManyField;
 
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Benjacho\BelongsToManyField\Rules\ArrayRules;
 
 class BelongsToManyField extends Field
 {
@@ -48,6 +49,15 @@ class BelongsToManyField extends Field
         $this->relationModel = $model;
         return $this;
     }
+
+    public function rules($rules)
+    {
+        $rules = ($rules instanceof Rule || is_string($rules)) ? func_get_args() : $rules;
+        $this->rules = [ new ArrayRules($rules) ];
+        return $this;
+    }
+
+
     
     public function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
     {

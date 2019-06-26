@@ -26,7 +26,6 @@ export default {
     components: {
         MultiSelect
     },
-
     data(){
         return {
             options: [],

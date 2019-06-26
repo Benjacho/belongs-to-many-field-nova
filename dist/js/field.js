@@ -826,7 +826,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     components: {
         MultiSelect: __WEBPACK_IMPORTED_MODULE_1_vue_multiselect___default.a
     },
-
     data: function data() {
         return {
             options: [],

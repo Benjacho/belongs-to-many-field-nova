@@ -50,6 +50,17 @@ public function fields(Request $request){
 }
 ```
 
+### Validations
+This package implement all Laravel Validations, you need to pass the rules in rules method, rules are listed on laravel validations rules for arrays*.
+```php
+use Benjacho\BelongsToManyField\BelongsToManyField;
+
+public function fields(Request $request){
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class)->rules('required', 'min:1', 'max:5', 'size:3' new CustomRule),
+}
+```
+
+For translations of this validations, use normal laravel validations translations.
 
 ### Todo
 Implement validations, implement custom rules
