@@ -37,10 +37,24 @@ public function fields(Request $request){
 }
 ```
 
+Optional
+
+- Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to label by another column name. By default it tracks by label 'name'
+
+
+```php
+use Benjacho\BelongsToManyField\BelongsToManyField;
+
+public function fields(Request $request){
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class)->optionsLabel('title'),
+}
+```
+
+
 ### Todo
-Only display onforms by default, implement validations, implement custom rules
+Implement validations, implement custom rules
 
 ### Contributing
 -Pull Requests
 -Issues
--Contact me: christianbfc97@gmail.com
+-Or Contact me: christianbfc97@gmail.com

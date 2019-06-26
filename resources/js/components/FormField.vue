@@ -4,8 +4,8 @@
             <multi-select
                 :options="options"
                 :multiple="true"
-                label="name"
-                track-by="name"
+                :label="optionsLabel"
+                :track-by="optionsLabel"
                 :class="errorClasses"
                 :placeholder="field.name"
                 v-model="value"
@@ -30,6 +30,7 @@ export default {
     data(){
         return {
             options: [],
+            optionsLabel: "name",
         }
     },
 
@@ -39,6 +40,7 @@ export default {
          */
         setInitialValue() {
             this.options = this.field.options;
+            this.optionsLabel = this.field.optionsLabel ? this.field.optionsLabel : 'name';
             this.value = this.field.value || ''
         },
 

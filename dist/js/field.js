@@ -829,7 +829,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     data: function data() {
         return {
-            options: []
+            options: [],
+            optionsLabel: "name"
         };
     },
 
@@ -840,6 +841,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
          */
         setInitialValue: function setInitialValue() {
             this.options = this.field.options;
+            this.optionsLabel = this.field.optionsLabel ? this.field.optionsLabel : 'name';
             this.value = this.field.value || '';
         },
 
@@ -11115,8 +11117,8 @@ var render = function() {
             attrs: {
               options: _vm.options,
               multiple: true,
-              label: "name",
-              "track-by": "name",
+              label: _vm.optionsLabel,
+              "track-by": _vm.optionsLabel,
               placeholder: _vm.field.name
             },
             model: {

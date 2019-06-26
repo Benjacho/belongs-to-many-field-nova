@@ -33,6 +33,10 @@ class BelongsToManyField extends Field
         parent::__construct($name, $attribute);
     }
 
+    public function optionsLabel(string $optionsLabel="name"){
+        return $this->withMeta(['optionsLabel' => $optionsLabel]);
+    }
+
     public function options($options)
     {
         $options = collect($options);
