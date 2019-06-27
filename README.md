@@ -53,6 +53,20 @@ public function fields(Request $request){
     BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->isAction(),
 }
 ```
+To obtain the data that is send in action do it: 
+
+```php
+public function handle(ActionFields $fields, Collection $models)
+{
+    // Get the expenseTypes from the request because the Field BelongsToManyField does not send it
+    
+    $values = array_column(json_decode(request()->roles, true),'id');
+    
+    foreach ($models as $model) {
+        $model->roles()->sync($values);
+    }
+}
+```
 
 ### Validations
 This package implement all Laravel Validations, you need to pass the rules in rules method, rules are listed on laravel validations rules for arrays*.
