@@ -814,6 +814,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -11107,30 +11109,32 @@ var render = function() {
     "default-field",
     { attrs: { field: _vm.field, errors: _vm.errors } },
     [
-      _c(
-        "template",
-        { slot: "field" },
-        [
-          _c("multi-select", {
-            class: _vm.errorClasses,
-            attrs: {
-              options: _vm.options,
-              multiple: true,
-              label: _vm.optionsLabel,
-              "track-by": _vm.optionsLabel,
-              placeholder: _vm.field.name
-            },
-            model: {
-              value: _vm.value,
-              callback: function($$v) {
-                _vm.value = $$v
+      _c("template", { slot: "field" }, [
+        _c(
+          "div",
+          { style: { height: _vm.field.height ? _vm.field.height : "auto" } },
+          [
+            _c("multi-select", {
+              class: _vm.errorClasses,
+              attrs: {
+                options: _vm.options,
+                multiple: true,
+                label: _vm.optionsLabel,
+                "track-by": _vm.optionsLabel,
+                placeholder: _vm.field.name
               },
-              expression: "value"
-            }
-          })
-        ],
-        1
-      )
+              model: {
+                value: _vm.value,
+                callback: function($$v) {
+                  _vm.value = $$v
+                },
+                expression: "value"
+              }
+            })
+          ],
+          1
+        )
+      ])
     ],
     2
   )

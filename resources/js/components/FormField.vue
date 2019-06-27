@@ -1,6 +1,7 @@
 <template>
     <default-field :field="field" :errors="errors">
         <template slot="field">
+            <div :style="{height: field.height ? field.height : 'auto'}">
             <multi-select
                 :options="options"
                 :multiple="true"
@@ -10,6 +11,7 @@
                 :placeholder="field.name"
                 v-model="value"
             />
+            </div>
         </template>
     </default-field>
 </template>

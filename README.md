@@ -10,30 +10,24 @@ Belongs To Many field to represent many to many relationship in field. This Fiel
 composer require benjacho/belongs-to-many-field
 ```
 
+## Deprecation
+Method relationModel() no more needed, to prevent conflicts it will be there. And trait HasBelongsToMany no more neede too, both will be in repo, but doesn't work.
+
 ### Usage
 
 To use in nova 1.0 use 0.3 in nova 2.0 use 0.4 and above.
 
-First of all use the trait in the model that you want to attach example User, user want to attach roles
+In the resource you need to pass:
 
-```php
-    use Benjacho\BelongsToManyField\HasBelongsToMany;
-
-    class User extends Model {
-        use HasBelongsToMany;
-    }
-```
-Then in the resource you need to pass:
-- Method make (label, many to many relationship, Nova Resource Relationship) 
-- Method options (Here you pass option that you need to render in Multiple Select, you can pass Querys, use get() method for that purpose)
-- Method relationModel (Here is a trick to pass the relation that you want to bind) Example User
+- Method make (label, many to many relationship, Nova Resource Relationship)
+- Method options (Here you pass options that you need to render in Multiple Select, you can pass Querys, use get() method for that purpose)
 - You dont need to pass onlyOnForms(), it is by default.
 
 ```php
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all()),
 }
 ```
 
@@ -46,12 +40,23 @@ Optional
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class)->optionsLabel('title'),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->optionsLabel('title'),
+}
+```
+
+- Method isAction(), this method is when you need this field in actions, this puts height of field in 350px, and converts in action.
+
+```php
+use Benjacho\BelongsToManyField\BelongsToManyField;
+
+public function fields(Request $request){
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->isAction(),
 }
 ```
 
 ### Validations
 This package implement all Laravel Validations, you need to pass the rules in rules method, rules are listed on laravel validations rules for arrays*.
+
 ```php
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
