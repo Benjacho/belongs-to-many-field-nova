@@ -44,7 +44,11 @@ class BelongsToManyField extends Field
         $this->fillUsing(function($request, $model, $attribute, $requestAttribute) use($resource) {
             if(is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
                 $model::saved(function($model) use($attribute, $request) {
-                    $values = array_column(json_decode($request->$attribute, true),'id');
+                    $inp = json_decode($request->$attribute, true);
+                    if ($inp !== null)
+                        $values = array_column($inp,'id');
+                    else 
+                        $values=[];
                     $model->$attribute()->sync(
                         $values
                     );
