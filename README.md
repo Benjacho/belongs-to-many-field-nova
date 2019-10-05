@@ -68,6 +68,17 @@ public function handle(ActionFields $fields, Collection $models)
 }
 ```
 
+- Method setMultiselectProps($props), this method allows you to set properties for the [vue multiselect component](https://vue-multiselect.js.org/#sub-props)
+
+```php
+     BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')
+     ->options(\App\Role::all()
+     ->setMultiselectProps([
+        'selectLabel' => 'click for select',
+        // and others from docs
+     ]);
+```
+
 ### Validations
 This package implement all Laravel Validations, you need to pass the rules in rules method, rules are listed on laravel validations rules for arrays*.
 
