@@ -4,11 +4,7 @@
             <div :style="{height: field.height ? field.height : 'auto'}">
             <multi-select
                 :options="options"
-                :multiple="true"
-                :label="optionsLabel"
-                :track-by="optionsLabel"
-                :class="errorClasses"
-                :placeholder="field.name"
+                v-bind="multiSelectProps"
                 v-model="value"
             />
             </div>
@@ -34,6 +30,19 @@ export default {
             optionsLabel: "name",
         }
     },
+  
+  computed: {
+    multiSelectProps() {
+      return {
+        multiple: true,
+	      label: this.optionsLabel,
+	      trackBy: this.optionsLabel,
+	      class: this.errorClasses,
+	      placeholder: this.field.name,
+        ...(this.field.multiselectOptions ? this.field.multiselectOptions : {}),
+      }
+    }
+  },
 
     methods: {
         /*

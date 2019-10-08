@@ -47,7 +47,7 @@ class BelongsToManyField extends Field
                     $inp = json_decode($request->$attribute, true);
                     if ($inp !== null)
                         $values = array_column($inp,'id');
-                    else 
+                    else
                         $values=[];
                     $model->$attribute()->sync(
                         $values
@@ -77,6 +77,10 @@ class BelongsToManyField extends Field
     public function isAction($isAction = true){
         $this->isAction = $isAction;
         return $this->withMeta(['height' => $this->height]);
+    }
+    
+    public function setMultiselectProps($props) {
+        return $this->withMeta(['multiselectOptions' => $props]);
     }
 
     public function rules($rules)
