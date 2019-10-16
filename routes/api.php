@@ -2,10 +2,6 @@
 
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-Route::get('/test', function() {
-   return 'hejhej';
-});
-
 Route::get('/{resource}/options/{relationship}', function(NovaRequest $request, $parent, $relationship) {
     $resourceClass = $request->newResource();
 

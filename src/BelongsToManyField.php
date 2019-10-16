@@ -8,8 +8,8 @@ use Benjacho\BelongsToManyField\Rules\ArrayRules;
 
 class BelongsToManyField extends Field
 {
-    public $showOnIndex = false;
-    public $showOnDetail = false;
+    public $showOnIndex = true;
+    public $showOnDetail = true;
     public $isAction = false;
     public $height = '350px';
     /**
