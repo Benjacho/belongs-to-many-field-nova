@@ -19,6 +19,12 @@ class FieldServiceProvider extends ServiceProvider
             Nova::script('BelongsToManyField', __DIR__.'/../dist/js/field.js');
             Nova::style('BelongsToManyField', __DIR__.'/../dist/css/field.css');
         });
+
+        $this->app->booted(function () {
+            \Route::middleware(['nova'])
+                ->prefix('nova-vendor/belongs-to-many-field')
+                ->group(__DIR__.'/../routes/api.php');
+        });
     }
 
     /**

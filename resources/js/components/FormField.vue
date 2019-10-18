@@ -1,7 +1,10 @@
 <template>
     <default-field :field="field" :errors="errors">
         <template slot="field">
-            <div :style="{height: field.height ? field.height : 'auto'}">
+            <div :style="{height: field.height ? field.height : 'auto'}" class="relative">
+            <div v-if="loading" class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white">
+                <loader class="text-60"/>
+            </div>
             <multi-select
                 :options="options"
                 v-bind="multiSelectProps"
@@ -28,9 +31,10 @@ export default {
         return {
             options: [],
             optionsLabel: "name",
+            loading: true,
         }
     },
-  
+
   computed: {
     multiSelectProps() {
       return {
@@ -49,10 +53,26 @@ export default {
          * Set the initial, internal value for the field.
          */
         setInitialValue() {
-            this.options = this.field.options;
             this.optionsLabel = this.field.optionsLabel ? this.field.optionsLabel : 'name';
             this.value = this.field.value || ''
+            this.fetchOptions();
         },
+
+      fetchOptions () {
+        if (this.field.options) {
+          this.options = this.field.options
+          this.loading = false;
+          return;
+        }
+
+        let baseUrl = '/nova-vendor/belongs-to-many-field/'
+
+        Nova.request(baseUrl + this.resourceName + '/' + 'options/' + this.field.attribute)
+          .then((data) => {
+            this.options = data.data;
+            this.loading = false;
+          })
+      },
 
         /**
          * Fill the given FormData object with the field's internal value.
