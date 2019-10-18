@@ -13,6 +13,8 @@ composer require benjacho/belongs-to-many-field
 ## Deprecation
 Method relationModel() no more needed, to prevent conflicts it will be there. And trait HasBelongsToMany no more neede too, both will be in repo, but doesn't work.
 
+Method options is not needed anymore.
+
 ### Usage
 
 To use in nova 1.0 use 0.3 in nova 2.0 use 0.4 and above.
@@ -20,14 +22,13 @@ To use in nova 1.0 use 0.3 in nova 2.0 use 0.4 and above.
 In the resource you need to pass:
 
 - Method make (label, many to many relationship, Nova Resource Relationship)
-- Method options (Here you pass options that you need to render in Multiple Select, you can pass Querys, use get() method for that purpose)
-- You dont need to pass onlyOnForms(), it is by default.
+- It is available in index, detail and forms!
 
 ```php
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all()),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role'),
 }
 ```
 
@@ -40,7 +41,7 @@ Optional
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->optionsLabel('title'),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->optionsLabel('title'),
 }
 ```
 
@@ -50,7 +51,7 @@ public function fields(Request $request){
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->isAction(),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->isAction(),
 }
 ```
 To obtain the data that is send in action do it: 
@@ -86,7 +87,7 @@ This package implement all Laravel Validations, you need to pass the rules in ru
 use Benjacho\BelongsToManyField\BelongsToManyField;
 
 public function fields(Request $request){
-    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->options(\App\Role::all())->relationModel(\App\User::class)->rules('required', 'min:1', 'max:5', 'size:3' new CustomRule),
+    BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')->relationModel(\App\User::class)->rules('required', 'min:1', 'max:5', 'size:3' new CustomRule),
 }
 ```
 
