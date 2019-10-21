@@ -887,82 +887,82 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
-//
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    mixins: [__WEBPACK_IMPORTED_MODULE_0_laravel_nova__["FormField"], __WEBPACK_IMPORTED_MODULE_0_laravel_nova__["HandlesValidationErrors"]],
+  mixins: [__WEBPACK_IMPORTED_MODULE_0_laravel_nova__["FormField"], __WEBPACK_IMPORTED_MODULE_0_laravel_nova__["HandlesValidationErrors"]],
 
-    props: ['resourceName', 'resourceId', 'field'],
+  props: ["resourceName", "resourceId", "field"],
 
-    components: {
-        MultiSelect: __WEBPACK_IMPORTED_MODULE_1_vue_multiselect___default.a
-    },
-    data: function data() {
-        return {
-            options: [],
-            optionsLabel: "name",
-            loading: true
-        };
-    },
-
-
-    computed: {
-        multiSelectProps: function multiSelectProps() {
-            return _extends({
-                multiple: true,
-                label: this.optionsLabel,
-                trackBy: this.optionsLabel,
-                class: this.errorClasses,
-                placeholder: this.field.name
-            }, this.field.multiselectOptions ? this.field.multiselectOptions : {});
-        }
-    },
-
-    methods: {
-        /*
-         * Set the initial, internal value for the field.
-         */
-        setInitialValue: function setInitialValue() {
-            this.optionsLabel = this.field.optionsLabel ? this.field.optionsLabel : 'name';
-            this.value = this.field.value || '';
-            this.fetchOptions();
-        },
-        fetchOptions: function fetchOptions() {
-            var _this = this;
-
-            if (this.field.options) {
-                this.options = this.field.options;
-                this.loading = false;
-                return;
-            }
-
-            var baseUrl = '/nova-vendor/belongs-to-many-field/';
-
-            Nova.request(baseUrl + this.resourceName + '/' + 'options/' + this.field.attribute).then(function (data) {
-                _this.options = data.data;
-                _this.loading = false;
-            });
-        },
+  components: {
+    MultiSelect: __WEBPACK_IMPORTED_MODULE_1_vue_multiselect___default.a
+  },
+  data: function data() {
+    return {
+      options: [],
+      optionsLabel: "name",
+      loading: true
+    };
+  },
 
 
-        /**
-         * Fill the given FormData object with the field's internal value.
-         */
-        fill: function fill(formData) {
-            formData.append(this.field.attribute, JSON.stringify(this.value) || '');
-        },
-
-
-        /**
-         * Update the field's internal value.
-         */
-        handleChange: function handleChange(value) {
-            this.value = value;
-        }
+  computed: {
+    multiSelectProps: function multiSelectProps() {
+      return _extends({
+        multiple: true,
+        label: this.optionsLabel,
+        trackBy: this.optionsLabel,
+        class: this.errorClasses,
+        placeholder: this.field.name
+      }, this.field.multiselectOptions ? this.field.multiselectOptions : {});
     }
+  },
+
+  methods: {
+    /*
+     * Set the initial, internal value for the field.
+     */
+    setInitialValue: function setInitialValue() {
+      this.optionsLabel = this.field.optionsLabel ? this.field.optionsLabel : "name";
+      console.log(this.optionsLabel);
+      this.value = this.field.value || "";
+      this.fetchOptions();
+    },
+    fetchOptions: function fetchOptions() {
+      var _this = this;
+
+      if (this.field.options) {
+        this.options = this.field.options;
+        this.loading = false;
+        return;
+      }
+
+      var baseUrl = "/nova-vendor/belongs-to-many-field/";
+
+      Nova.request(baseUrl + this.resourceName + "/" + "options/" + this.field.attribute).then(function (data) {
+        _this.options = data.data;
+        _this.loading = false;
+      });
+    },
+
+
+    /**
+     * Fill the given FormData object with the field's internal value.
+     */
+    fill: function fill(formData) {
+      formData.append(this.field.attribute, JSON.stringify(this.value) || "");
+    },
+
+
+    /**
+     * Update the field's internal value.
+     */
+    handleChange: function handleChange(value) {
+      this.value = value;
+    }
+  }
 });
 
 /***/ }),
