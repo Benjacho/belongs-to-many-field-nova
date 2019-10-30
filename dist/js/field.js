@@ -254,12 +254,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['resourceName', 'field']
+  props: ["resourceName", "field"]
 });
 
 /***/ }),
@@ -281,7 +278,9 @@ var render = function() {
             attrs: { href: _vm.field.attribute + "/" + resource.id }
           },
           [
-            _vm._v("\n            " + _vm._s(resource["name"])),
+            _vm._v(
+              "\n      " + _vm._s(resource[_vm.field.optionsLabel]) + "\n      "
+            ),
             key < _vm.field.value.length - 1
               ? _c("span", [_vm._v(",")])
               : _vm._e()
@@ -370,9 +369,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['resource', 'resourceName', 'resourceId', 'field', 'abc']
+  props: ["resource", "resourceName", "resourceId", "field"]
 });
 
 /***/ }),
@@ -403,7 +403,11 @@ var render = function() {
               }
             },
             [
-              _vm._v("\n                " + _vm._s(resource.name)),
+              _vm._v(
+                "\n        " +
+                  _vm._s(resource[_vm.field.optionsLabel]) +
+                  "\n        "
+              ),
               key < _vm.field.value.length - 1
                 ? _c("span", [_vm._v(",")])
                 : _vm._e()
@@ -926,7 +930,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
      */
     setInitialValue: function setInitialValue() {
       this.optionsLabel = this.field.optionsLabel ? this.field.optionsLabel : "name";
-      console.log(this.optionsLabel);
       this.value = this.field.value || "";
       this.fetchOptions();
     },
@@ -941,7 +944,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
       var baseUrl = "/nova-vendor/belongs-to-many-field/";
 
-      Nova.request(baseUrl + this.resourceName + "/" + "options/" + this.field.attribute).then(function (data) {
+      Nova.request(baseUrl + this.resourceName + "/" + "options/" + this.field.attribute + "/" + this.optionsLabel).then(function (data) {
         _this.options = data.data;
         _this.loading = false;
       });

@@ -17,10 +17,12 @@ class BelongsToManyField extends Field
      *
      * @var string
      */
-    
+
     public $component = 'BelongsToManyField';
-    
+
     public $relationModel;
+
+    public $label = "name";
 
     /**
      * Create a new field.
@@ -41,14 +43,14 @@ class BelongsToManyField extends Field
         $this->resourceClass = $resource;
         $this->resourceName = $resource::uriKey();
         $this->manyToManyRelationship = $this->attribute;
-        $this->fillUsing(function($request, $model, $attribute, $requestAttribute) use($resource) {
-            if(is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
-                $model::saved(function($model) use($attribute, $request) {
+        $this->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($resource) {
+            if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
+                $model::saved(function ($model) use ($attribute, $request) {
                     $inp = json_decode($request->$attribute, true);
                     if ($inp !== null)
-                        $values = array_column($inp,'id');
+                        $values = array_column($inp, 'id');
                     else
-                        $values=[];
+                        $values = [];
                     $model->$attribute()->sync(
                         $values
                     );
@@ -58,8 +60,10 @@ class BelongsToManyField extends Field
         });
     }
 
-    public function optionsLabel(string $optionsLabel="name"){
-        return $this->withMeta(['optionsLabel' => $optionsLabel]);
+    public function optionsLabel(string $optionsLabel)
+    {
+        $this->label = $optionsLabel;
+        return $this->withMeta(['optionsLabel' => $this->label]);
     }
 
     public function options($options)
@@ -67,32 +71,34 @@ class BelongsToManyField extends Field
         $options = collect($options);
         return $this->withMeta(['options' => $options]);
     }
-    
+
     public function relationModel($model)
     {
         $this->relationModel = $model;
         return $this;
     }
 
-    public function isAction($isAction = true){
+    public function isAction($isAction = true)
+    {
         $this->isAction = $isAction;
         return $this->withMeta(['height' => $this->height]);
     }
-    
-    public function setMultiselectProps($props) {
+
+    public function setMultiselectProps($props)
+    {
         return $this->withMeta(['multiselectOptions' => $props]);
     }
 
     public function rules($rules)
     {
         $rules = ($rules instanceof Rule || is_string($rules)) ? func_get_args() : $rules;
-        $this->rules = [ new ArrayRules($rules) ];
+        $this->rules = [new ArrayRules($rules)];
         return $this;
     }
-    
+
     public function resolve($resource, $attribute = null)
     {
-        if($this->isAction){
+        if ($this->isAction) {
             parent::resolve($resource, $attribute);
         } else {
             parent::resolve($resource, $attribute);
@@ -101,6 +107,25 @@ class BelongsToManyField extends Field
                 $this->value = $value;
             }
         }
-        
+    }
+
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'component' => $this->component(),
+            'prefixComponent' => true,
+            'indexName' => $this->name,
+            'name' => $this->name,
+            'attribute' => $this->attribute,
+            'value' => $this->value,
+            'panel' => $this->panel,
+            'sortable' => $this->sortable,
+            'nullable' => $this->nullable,
+            'readonly' => $this->isReadonly(app(NovaRequest::class)),
+            'textAlign' => $this->textAlign,
+            'sortableUriKey' => $this->sortableUriKey(),
+            'stacked' => $this->stacked,
+            'optionsLabel' => $this->label
+        ], $this->meta());
     }
 }

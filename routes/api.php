@@ -2,7 +2,7 @@
 
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-Route::get('/{resource}/options/{relationship}', function (NovaRequest $request, $parent, $relationship) {
+Route::get('/{resource}/options/{relationship}/{optionsLabel}', function (NovaRequest $request, $parent, $relationship, $optionsLabel) {
     $resourceClass = $request->newResource();
 
     $field = $resourceClass
@@ -17,18 +17,12 @@ Route::get('/{resource}/options/{relationship}', function (NovaRequest $request,
         ->mapInto($field->resourceClass)
         ->filter(function ($resource) use ($request, $field) {
             return $request->newResource()->authorizedToAttach($request, $resource->resource);
-        })->map(function ($resource) {
-            return array_merge(
-                $resource->toArray(),
-                [
-                    'value' => $resource->getKey(),
-                ]
-            );
-            /* return [
+        })->map(function ($resource) use ($optionsLabel) {
+            return [
                 'id' => $resource->id,
-                'name' => $resource->title(),
+                $optionsLabel => $resource->title(),
                 'value' => $resource->getKey(),
-            ]; */
+            ];
         })->sortBy('name')
         ->values();
 });

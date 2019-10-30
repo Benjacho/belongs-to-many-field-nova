@@ -32,9 +32,14 @@ public function fields(Request $request){
 }
 ```
 
+
 Optional
 
-- Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to label by another column name. By default it tracks by label 'name'
+- Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to label by another column name. By default it tracks by label 'name'.
+
+IMPORTANT
+
+- If you want to label by another column name, you need to set the title() method on your resource, this method returns an string that is used to label it, also don't forget to add optionsLabel() method.
 
 
 ```php

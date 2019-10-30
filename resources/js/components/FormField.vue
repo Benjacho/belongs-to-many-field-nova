@@ -55,7 +55,6 @@ export default {
       this.optionsLabel = this.field.optionsLabel
         ? this.field.optionsLabel
         : "name";
-      console.log(this.optionsLabel);
       this.value = this.field.value || "";
       this.fetchOptions();
     },
@@ -70,7 +69,13 @@ export default {
       let baseUrl = "/nova-vendor/belongs-to-many-field/";
 
       Nova.request(
-        baseUrl + this.resourceName + "/" + "options/" + this.field.attribute
+        baseUrl +
+          this.resourceName +
+          "/" +
+          "options/" +
+          this.field.attribute +
+          "/" +
+          this.optionsLabel
       ).then(data => {
         this.options = data.data;
         this.loading = false;
