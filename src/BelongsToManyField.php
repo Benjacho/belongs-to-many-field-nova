@@ -125,7 +125,8 @@ class BelongsToManyField extends Field
             'textAlign' => $this->textAlign,
             'sortableUriKey' => $this->sortableUriKey(),
             'stacked' => $this->stacked,
-            'optionsLabel' => $this->label
+            'optionsLabel' => $this->label,
+            'resourceNameRelationship' => $this->resourceName,
         ], $this->meta());
     }
 }

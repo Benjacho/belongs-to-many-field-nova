@@ -3,7 +3,7 @@
     <div slot="value">
       <span v-for="(resource, key) in field.value">
         <a
-          :href="$router.options.base + '/resources/' + field.attribute +'/' + resource.id"
+          :href="$router.options.base + '/resources/' + field.resourceNameRelationship +'/' + resource.id"
           class="no-underline dim text-primary font-bold"
         >
           {{resource[field.optionsLabel]}}
