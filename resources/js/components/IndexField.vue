@@ -1,13 +1,19 @@
 <template>
   <div>
     <span v-for="(resource, key) in field.value">
-      <a
-        :href="field.resourceNameRelationship +'/' + resource.id"
-        class="no-underline dim text-primary font-bold"
+      <router-link
+          :to="{
+          name: 'detail',
+          params: {
+            resourceName: field.resourceNameRelationship,
+            resourceId: resource.id,
+          },
+        }"
+          class="no-underline dim text-primary font-bold"
       >
         {{resource[field.optionsLabel]}}
         <span v-if="key < (field.value.length - 1)">,</span>
-      </a>
+      </router-link>
     </span>
   </div>
 </template>
