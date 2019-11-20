@@ -100,3 +100,37 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style type="text/css">
+    .multiselect__placeholder {
+        font-size: 1rem;
+        color: var(--70) !important;
+        margin-left: 4px
+    }
+
+    .multiselect__tags {
+        border-width: 1px;
+        border-color: var(--60);
+    }
+
+    .multiselect__select {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 35px;
+    }
+
+    .multiselect__select::before {
+        border-width: 0; /* Reset default style */
+
+        /*position: absolute;*/
+        top: 0;
+        width: 22px;
+        height: 6px;
+        margin: 0;
+
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6"><path fill="%2335393C" fill-rule="nonzero" d="M8.293.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4A1 1 0 0 1 1.707.293L5 3.586 8.293.293z"/></svg>');
+    }
+
+</style>
