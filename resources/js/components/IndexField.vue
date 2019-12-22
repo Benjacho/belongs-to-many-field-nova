@@ -23,7 +23,6 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
   .single {
     &:after {
