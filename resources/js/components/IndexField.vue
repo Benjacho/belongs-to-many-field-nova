@@ -24,15 +24,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .single {
+  .single:not(:last-of-type) {
     &:after {
       content: ', ';
-    }
-
-    &:last-of-type {
-      &:after {
-        content: '';
-      }
     }
   }
 </style>
