@@ -1,19 +1,18 @@
 <template>
   <div>
-    <span v-for="(resource, key) in field.value">
+    <span v-for="(resource, key) in field.value" class="single">
       <router-link
-          :to="{
+        :to="{
           name: 'detail',
           params: {
             resourceName: field.resourceNameRelationship,
             resourceId: resource.id,
           },
         }"
-          class="no-underline dim text-primary font-bold"
-      >
-        {{resource[field.optionsLabel]}}
-        <span v-if="key < (field.value.length - 1)">,</span>
-      </router-link>
+        class="no-underline dim text-primary font-bold"
+        v-if="field.viewable"
+      >{{resource[field.optionsLabel]}}</router-link>
+      <span v-else>{{resource[field.optionsLabel]}}</span>
     </span>
   </div>
 </template>
@@ -23,3 +22,11 @@ export default {
   props: ["resourceName", "field"]
 };
 </script>
+
+<style lang="scss" scoped>
+  .single:not(:last-of-type) {
+    &:after {
+      content: ', ';
+    }
+  }
+</style>

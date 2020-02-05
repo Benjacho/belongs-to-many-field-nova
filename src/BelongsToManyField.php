@@ -12,6 +12,8 @@ class BelongsToManyField extends Field
     public $showOnDetail = true;
     public $isAction = false;
     public $height = '350px';
+    public $viewable = true;
+
     /**
      * The field's component.
      *
@@ -84,6 +86,12 @@ class BelongsToManyField extends Field
         return $this->withMeta(['height' => $this->height]);
     }
 
+    public function viewable($viewable = true)
+    {
+        $this->viewable = $viewable;
+        return $this;
+    }
+
     public function setMultiselectProps($props)
     {
         return $this->withMeta(['multiselectOptions' => $props]);
@@ -112,21 +120,22 @@ class BelongsToManyField extends Field
     public function jsonSerialize()
     {
         return array_merge([
+            'attribute' => $this->attribute,
             'component' => $this->component(),
-            'prefixComponent' => true,
             'indexName' => $this->name,
             'name' => $this->name,
-            'attribute' => $this->attribute,
-            'value' => $this->value,
-            'panel' => $this->panel,
-            'sortable' => $this->sortable,
             'nullable' => $this->nullable,
+            'optionsLabel' => $this->label,
+            'panel' => $this->panel,
+            'prefixComponent' => true,
             'readonly' => $this->isReadonly(app(NovaRequest::class)),
-            'textAlign' => $this->textAlign,
+            'resourceNameRelationship' => $this->resourceName,
+            'sortable' => $this->sortable,
             'sortableUriKey' => $this->sortableUriKey(),
             'stacked' => $this->stacked,
-            'optionsLabel' => $this->label,
-            'resourceNameRelationship' => $this->resourceName,
+            'textAlign' => $this->textAlign,
+            'value' => $this->value,
+            'viewable' => $this->viewable,
         ], $this->meta());
     }
 }
