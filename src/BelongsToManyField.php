@@ -5,6 +5,7 @@ namespace Benjacho\BelongsToManyField;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
+use Laravel\Nova\Fields\ResourceRelationshipGuesser;
 
 class BelongsToManyField extends Field
 {
