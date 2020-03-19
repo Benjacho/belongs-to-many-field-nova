@@ -77,7 +77,6 @@
       },
 
       dependencyWatcher(value) {
-        this.abc();
         if (value === this.dependsOnValue) {
           return
         }
