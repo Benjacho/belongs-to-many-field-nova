@@ -97,6 +97,13 @@ class BelongsToManyField extends Field
         return $this->withMeta(['multiselectOptions' => $props]);
     }
 
+    public function dependsOn($dependsOnField, $tableKey){
+        return $this->withMeta([
+            'dependsOn' => $dependsOnField,
+            'dependsOnKey' => $tableKey
+        ]);
+    }
+
     public function rules($rules)
     {
         $rules = ($rules instanceof Rule || is_string($rules)) ? func_get_args() : $rules;

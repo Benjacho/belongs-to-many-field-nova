@@ -7,19 +7,22 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ResourceController
 {
-    public function index(NovaRequest $request, $parent, $relationship, $optionsLabel)
+    public function index(NovaRequest $request, $parent, $relationship, $optionsLabel, $dependsOnValue = null, $dependsOnKey = null)
     {
         $resourceClass = $request->newResource();
-
         $field = $resourceClass
             ->availableFields($request)
             ->where('component', 'BelongsToManyField')
             ->where('attribute', $relationship)
             ->first();
-
         $query = $field->resourceClass::newModel();
 
-        return $field->resourceClass::relatableQuery($request, $query)->get()
+        $queryResult = $field->resourceClass::relatableQuery($request, $query);
+
+        if($dependsOnValue){
+          $queryResult = $queryResult->where($dependsOnKey, $dependsOnValue);
+        }
+        return $queryResult->get()
             ->mapInto($field->resourceClass)
             ->filter(function ($resource) use ($request, $field) {
                 return $request->newResource()->authorizedToAttach($request, $resource->resource);
