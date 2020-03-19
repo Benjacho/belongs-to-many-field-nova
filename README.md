@@ -109,3 +109,5 @@ public function fields(Request $request){
 ![image](https://raw.githubusercontent.com/Benjacho/belongs-to-many-field-nova/master/validation.png)
 
 For translations of this validations, use normal laravel validations translations.
+
+Credits to: https://github.com/manmohanjit/nova-belongs-to-dependency
