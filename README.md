@@ -33,7 +33,7 @@ public function fields(Request $request){
 }
 ```
 
-###FUNCTIONS
+### Functions
 
 
 | Function                      | Param          | default    | description                                                                                                                                                                  |
