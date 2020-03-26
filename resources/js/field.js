@@ -21,9 +21,10 @@ Nova.booting((Vue, router, store) => {
           el.style.zIndex = originalZIndex
         }
       })
-
+      console.log('abc');
       window.addEventListener('wheel', event => {
         if (selectIsOpen) {
+          console.log(event.stopPropagation());
           // disabled outside scroll when select is open
           event.stopPropagation()
         }
