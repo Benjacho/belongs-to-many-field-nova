@@ -8,7 +8,7 @@
         >
           <loader class="text-60"/>
         </div>
-        <multi-select :options="options" v-bind="multiSelectProps" v-model="value"/>
+        <multi-select v-select-overflow :options="options" v-bind="multiSelectProps" v-model="value"/>
       </div>
     </template>
   </default-field>
