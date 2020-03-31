@@ -76,7 +76,7 @@ public function handle(ActionFields $fields, Collection $models)
 
 ```php
      BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role')
-     ->options(\App\Role::all()
+     ->options(\App\Role::all())
      ->setMultiselectProps([
         'selectLabel' => 'click for select',
         // and others from docs
