@@ -8,7 +8,7 @@
         >
           <loader class="text-60"/>
         </div>
-        <multi-select v-select-overflow :options="options" v-bind="multiSelectProps" v-model="value"/>
+        <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options" v-bind="multiSelectProps" v-model="value"/>
       </div>
     </template>
   </default-field>
@@ -35,7 +35,12 @@
         loading: true
       };
     },
-
+    mounted() {
+      window.addEventListener('scroll', this.repositionDropdown);
+    },
+    destroyed() {
+      window.removeEventListener('scroll', this.repositionDropdown);
+    },
     created() {
       if (this.field.dependsOn !== undefined) {
         this.isDependant = true;
@@ -57,6 +62,29 @@
     },
 
     methods: {
+      repositionDropdown(onOpen = false) {
+        const ms = this.$refs.multiselect;
+        if (!ms) return;
+        const el = ms.$el;
+        const handlePositioning = () => {
+          const { top, height, bottom } = el.getBoundingClientRect();
+          if (onOpen) ms.$refs.list.scrollTop = 0;
+          const fromBottom = (window.innerHeight || document.documentElement.clientHeight) - bottom;
+          ms.$refs.list.style.position = 'fixed';
+          ms.$refs.list.style.width = `${el.clientWidth}px`;
+          if (fromBottom < 300) {
+            ms.$refs.list.style.top = 'auto';
+            ms.$refs.list.style.bottom = `${fromBottom + height}px`;
+            ms.$refs.list.style['border-radius'] = '5px 5px 0 0';
+          } else {
+            ms.$refs.list.style.bottom = 'auto';
+            ms.$refs.list.style.top = `${top + height}px`;
+            ms.$refs.list.style['border-radius'] = '0 0 5px 5px';
+          }
+        };
+        if (onOpen) this.$nextTick(handlePositioning);
+        else handlePositioning();
+      },
       registerDependencyWatchers(root) {
         root.$children.forEach(component => {
           if (this.componentIsDependency(component)) {
@@ -87,7 +115,6 @@
        * Set the initial, internal value for the field.
        */
       setInitialValue() {
-        console.log('avc')
         this.optionsLabel = this.field.optionsLabel
           ? this.field.optionsLabel
           : "name";
@@ -154,6 +181,7 @@
        */
       handleChange(value) {
         this.value = value;
+        this.$nextTick(() => this.repositionDropdown());
       }
     }
   };
