@@ -8,7 +8,8 @@
         >
           <loader class="text-60"/>
         </div>
-        <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options" v-bind="multiSelectProps" v-model="value"/>
+        <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
+                      v-bind="multiSelectProps" v-model="value"/>
       </div>
     </template>
   </default-field>
@@ -32,6 +33,7 @@
         optionsLabel: "name",
         dependsOnValue: null,
         isDependant: false,
+        shouldClear: false,
         loading: true
       };
     },
@@ -67,7 +69,7 @@
         if (!ms) return;
         const el = ms.$el;
         const handlePositioning = () => {
-          const { top, height, bottom } = el.getBoundingClientRect();
+          const {top, height, bottom} = el.getBoundingClientRect();
           if (onOpen) ms.$refs.list.scrollTop = 0;
           const fromBottom = (window.innerHeight || document.documentElement.clientHeight) - bottom;
           ms.$refs.list.style.position = 'fixed';
@@ -120,8 +122,6 @@
           return
         }
         this.dependsOnValue = value.value;
-        this.options = [];
-        this.value = null;
         this.fetchOptions()
       },
       /*
@@ -143,7 +143,6 @@
         }
 
         let baseUrl = "/nova-vendor/belongs-to-many-field/";
-
         if (this.isDependant) {
           if (this.dependsOnValue) {
             this.loading = true;
