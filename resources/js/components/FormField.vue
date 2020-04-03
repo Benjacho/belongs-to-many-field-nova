@@ -89,12 +89,23 @@
         root.$children.forEach(component => {
           if (this.componentIsDependency(component)) {
             if (component.selectedResourceId !== undefined) {
-              component.$watch('selectedResourceId', this.dependencyWatcher, {immediate: true});
+              let attribute = this.findWatchableComponentAttribute(component);
+              component.$watch(attribute, this.dependencyWatcher, {immediate: true});
               this.dependencyWatcher(component.selectedResourceId)
             }
           }
           this.registerDependencyWatchers(component)
         })
+      },
+
+      findWatchableComponentAttribute(component) {
+        let attribute;
+        if (component.field.component === 'belongs-to-field') {
+          attribute = 'selectedResource';
+        } else {
+          attribute = 'value';
+        }
+        return attribute;
       },
 
       componentIsDependency(component) {
@@ -108,7 +119,9 @@
         if (value === this.dependsOnValue) {
           return
         }
-        this.dependsOnValue = value;
+        this.dependsOnValue = value.value;
+        this.options = [];
+        this.value = null;
         this.fetchOptions()
       },
       /*
@@ -133,6 +146,7 @@
 
         if (this.isDependant) {
           if (this.dependsOnValue) {
+            this.loading = true;
             Nova.request(
               baseUrl +
               this.resourceName +
