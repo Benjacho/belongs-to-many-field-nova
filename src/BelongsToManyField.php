@@ -37,7 +37,7 @@ class BelongsToManyField extends Field
      * @return void
      */
     //Code by @drsdre
-    public function __construct($name, $attribute = null, $resource = null)
+    public function __construct($name, $attribute = null, $resource = null, $pivotValues=[])
     {
         parent::__construct($name, $attribute);
         $resource = $resource ?? ResourceRelationshipGuesser::guessResource($name);
@@ -47,12 +47,12 @@ class BelongsToManyField extends Field
         $this->resourceClass = $resource;
         $this->resourceName = $resource::uriKey();
         $this->manyToManyRelationship = $this->attribute;
-        $this->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($resource) {
+        $this->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($resource, $pivotValues) {
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
-                $model::saved(function ($model) use ($attribute, $request) {
+                $model::saved(function ($model) use ($attribute, $request, $pivotValues) {
                     $inp = json_decode($request->$attribute, true);
                     if ($inp !== null)
-                        $values = array_column($inp, 'id');
+                        $values = array_fill_keys(array_column($inp, 'id'), $pivotValues);
                     else
                         $values = [];
                     $model->$attribute()->sync(
