@@ -33,6 +33,12 @@ public function fields(Request $request){
 }
 ```
 
+You may optionally add a 4th parameter to pass additional pivot values to the `sync()`-method that is uses under the hood (see https://laravel.com/docs/7.x/eloquent-relationships#updating-many-to-many-relationships):
+
+`BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role', ['scope' => 'backend'])`
+
+This will also populate the `scope` column in your pivot table with the value of `backend` for all selected roles.
+
 ### Functions
 
 
