@@ -33,7 +33,7 @@ public function fields(Request $request){
 }
 ```
 
-You may optionally add a 4th parameter to pass additional pivot values to the `sync()`-method that is uses under the hood (see https://laravel.com/docs/7.x/eloquent-relationships#updating-many-to-many-relationships):
+You may optionally add a 4th parameter to pass additional pivot values to the `sync()`-method that is used under the hood (see https://laravel.com/docs/7.x/eloquent-relationships#updating-many-to-many-relationships):
 
 `BelongsToManyField::make('Role Label', 'roles', 'App\Nova\Role', ['scope' => 'backend'])`
 
