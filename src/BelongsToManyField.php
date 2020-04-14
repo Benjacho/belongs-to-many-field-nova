@@ -51,7 +51,7 @@ class BelongsToManyField extends Field
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
                 $model::saved(function ($model) use ($attribute, $request, $pivotValues) {
                     $inp = json_decode($request->$attribute, true);
-                    if ($inp !== null)
+                    if (is_array($inp) && !empty($inp))
                         $values = array_fill_keys(array_column($inp, 'id'), $pivotValues);
                     else
                         $values = [];
