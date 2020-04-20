@@ -13,6 +13,8 @@ class BelongsToManyField extends Field
     public $showOnIndex = true;
     public $showOnDetail = true;
     public $isAction = false;
+    public $selectAll = false;
+    public $messageSelectAll = 'Select All';
     public $height = '350px';
     public $viewable = true;
 
@@ -86,6 +88,12 @@ class BelongsToManyField extends Field
     {
         $this->isAction = $isAction;
         return $this->withMeta(['height' => $this->height]);
+    }
+
+    public function canSelectAll($messageSelectAll = 'Select All', $selectAll = true){
+      $this->selectAll = $selectAll;
+      $this->messageSelectAll = $messageSelectAll;
+      return $this->withMeta(['selectAll' => $this->selectAll, 'messageSelectAll' => $this->messageSelectAll]);
     }
 
     public function viewable($viewable = true)

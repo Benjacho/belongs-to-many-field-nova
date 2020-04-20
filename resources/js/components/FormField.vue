@@ -8,8 +8,13 @@
         >
           <loader class="text-60"/>
         </div>
-        <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
-                      v-bind="multiSelectProps" v-model="value"/>
+        <div v-if="this.field.selectAll" class="mb-2">
+          <input type="checkbox" id="checkbox" class="checkbox" v-model="selectAll">
+          <label for="checkbox">{{this.field.messageSelectAll}}</label>
+        </div>
+<!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
+          <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
+                        v-bind="multiSelectProps" v-model="value"/>
       </div>
     </template>
   </default-field>
@@ -34,7 +39,8 @@
         dependsOnValue: null,
         isDependant: false,
         shouldClear: false,
-        loading: true
+        loading: true,
+        selectAll:false,
       };
     },
     mounted() {
@@ -56,13 +62,22 @@
           multiple: true,
           label: this.optionsLabel,
           trackBy: this.optionsLabel,
+          preselectFirst: false,
           class: this.errorClasses,
           placeholder: this.field.name,
           ...(this.field.multiselectOptions ? this.field.multiselectOptions : {})
         };
       }
     },
-
+    watch: {
+      selectAll(value){
+        if(value){
+          this.value = [...this.options];
+        } else {
+          this.value = [];
+        }
+      }
+    },
     methods: {
       repositionDropdown(onOpen = false) {
         const ms = this.$refs.multiselect;
