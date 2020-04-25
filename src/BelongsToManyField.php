@@ -17,6 +17,7 @@ class BelongsToManyField extends Field
     public $messageSelectAll = 'Select All';
     public $height = '350px';
     public $viewable = true;
+    public $showAsList = false;
 
     /**
      * The field's component.
@@ -94,6 +95,11 @@ class BelongsToManyField extends Field
       $this->selectAll = $selectAll;
       $this->messageSelectAll = $messageSelectAll;
       return $this->withMeta(['selectAll' => $this->selectAll, 'messageSelectAll' => $this->messageSelectAll]);
+    }
+
+    public function showAsListInDetail($showAsList = true){
+        $this->showAsList = $showAsList;
+        return $this->withMeta(['showAsList' => $this->showAsList]);
     }
 
     public function viewable($viewable = true)

@@ -43,6 +43,7 @@ public function fields(Request $request){
 | `setMultiselectProps`         | Array           | []         | this method allows you to set properties for the [vue multiselect component](https://vue-multiselect.js.org/#sub-props)                                                                                                                            |
 | `dependsOn`                   | String, String  | null, null | This method allows you to depend on belongsto field, this make an auto query                                                                                                 |
 | `canSelectAll`                | String, Boolean | 'Select All', true | This method allows you to have a select all checkbox and display custom message                                                                                              |
+| `showAsListInDetail`          | Boolean         | true       | This method allows you to display as list in detail                                                                                             |
 
 - Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to label by another column name. By default it tracks by label 'name'.
 
@@ -98,6 +99,13 @@ public function handle(ActionFields $fields, Collection $models)
 ```php
      BelongsToManyField::make('Participants', 'participant', 'App\Nova\Participant')
      ->canSelectAll('Seleccionar Todo'),
+```
+
+- Method showAsListInDetail(), This method allows you to change the default view to list in detail
+
+```php
+     BelongsToManyField::make('Participants', 'participant', 'App\Nova\Participant')
+     ->showAsListInDetail(),
 ```
 
 ### Validations
