@@ -166,7 +166,7 @@ class BelongsToManyField extends Field
         ], $this->meta());
     }
 
-    public function pivot(): array
+    public function pivot()
     {
         return $this->pivotData;
     }
