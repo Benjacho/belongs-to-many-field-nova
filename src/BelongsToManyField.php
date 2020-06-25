@@ -18,6 +18,7 @@ class BelongsToManyField extends Field
     public $height = '350px';
     public $viewable = true;
     public $showAsList = false;
+    public $pivotData = [];
 
     /**
      * The field's component.
@@ -58,6 +59,9 @@ class BelongsToManyField extends Field
                         $values = array_column($inp, 'id');
                     else
                         $values = [];
+                    if (!empty($this->pivot())) {
+                        $values = array_fill_keys($values, $this->pivot());
+                    }
                     $model->$attribute()->sync(
                         $values
                     );
@@ -160,5 +164,17 @@ class BelongsToManyField extends Field
             'value' => $this->value,
             'viewable' => $this->viewable,
         ], $this->meta());
+    }
+
+    public function pivot()
+    {
+        return $this->pivotData;
+    }
+
+    public function setPivot(array $attributes)
+    {
+        $this->pivotData = $attributes;
+
+        return $this;
     }
 }
