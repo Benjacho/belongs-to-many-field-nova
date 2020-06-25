@@ -32,7 +32,7 @@ class ResourceController
                     $optionsLabel => $resource->title(),
                     'value' => $resource->getKey(),
                 ];
-            })->sortBy('name')
+            })
             ->values();
     }
 }
