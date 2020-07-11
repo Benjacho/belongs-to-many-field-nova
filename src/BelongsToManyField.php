@@ -69,6 +69,7 @@ class BelongsToManyField extends Field
                 unset($request->$attribute);
             }
         });
+        $this->localize();
     }
 
     public function optionsLabel(string $optionsLabel)
@@ -176,5 +177,12 @@ class BelongsToManyField extends Field
         $this->pivotData = $attributes;
 
         return $this;
+    }
+
+    private function localize(){
+        $this->setMultiselectProps([
+            'selectLabel' => 'Нажмите Enter для выбора',
+            'deselectLabel' => 'Нажмите Enter для отмены'
+        ]);
     }
 }
