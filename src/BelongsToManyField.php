@@ -181,8 +181,8 @@ class BelongsToManyField extends Field
 
     private function localize(){
         $this->setMultiselectProps([
-            'selectLabel' => 'Нажмите Enter для выбора',
-            'deselectLabel' => 'Нажмите Enter для отмены'
+            'selectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_label'),
+            'deselectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_label')
         ]);
     }
 }
