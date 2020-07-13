@@ -194,12 +194,18 @@ class BelongsToManyField extends Field
         ]);
 
         $this->setMultiselectSlots([
-            'noOptions'=>$this->getNoOptionsSlot()
+            'noOptions'=>$this->getNoOptionsSlot(),
+            'noResult'=>$this->getNoResultSlot()
         ]);
     }
 
     protected function getNoOptionsSlot()
     {
         return __('belongs-to-many-field-nova::vue-multiselect.no_options');
+    }
+
+    protected function getNoResultSlot()
+    {
+        return __('belongs-to-many-field-nova::vue-multiselect.no_result');
     }
 }

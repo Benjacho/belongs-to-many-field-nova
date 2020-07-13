@@ -16,6 +16,7 @@
                 <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
                               v-bind="multiSelectProps" v-model="value">
                     <template slot="noOptions">{{ field.multiselectSlots.noOptions }}</template>
+                    <template slot="noResult">{{ field.multiselectSlots.noResult }}</template>
                 </multi-select>
             </div>
         </template>
