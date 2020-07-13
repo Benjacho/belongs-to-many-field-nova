@@ -182,7 +182,10 @@ class BelongsToManyField extends Field
     private function localize(){
         $this->setMultiselectProps([
             'selectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_label'),
-            'deselectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_label')
+            'selectGroupLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_group_label'),
+            'selectedLabel'=>__('belongs-to-many-field-nova::vue-multiselect.selected_label'),
+            'deselectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_label'),
+            'deselectGroupLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_group_label'),
         ]);
     }
 }

@@ -2,5 +2,8 @@
 
 return [
     'select_label'=>'Нажмите Enter для выбора',
-    'deselect_label'=>'Нажмите Enter для удаления'
+    'select_group_label'=>'Нажмите Enter для выбора группы',
+    'selected_label'=>'Выбран',
+    'deselect_label'=>'Нажмите Enter для удаления',
+    'deselect_group_label'=>'Нажмите Enter для отмены выбора группы'
 ];
