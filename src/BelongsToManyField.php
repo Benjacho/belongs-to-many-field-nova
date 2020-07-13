@@ -118,6 +118,11 @@ class BelongsToManyField extends Field
         return $this->withMeta(['multiselectOptions' => $props]);
     }
 
+    public function setMultiselectSlots($slots)
+    {
+        return $this->withMeta(['multiselectSlots' => $slots]);
+    }
+
     public function dependsOn($dependsOnField, $tableKey){
         return $this->withMeta([
             'dependsOn' => $dependsOnField,
@@ -179,7 +184,7 @@ class BelongsToManyField extends Field
         return $this;
     }
 
-    private function localize(){
+    protected function localize(){
         $this->setMultiselectProps([
             'selectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_label'),
             'selectGroupLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_group_label'),
@@ -187,5 +192,14 @@ class BelongsToManyField extends Field
             'deselectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_label'),
             'deselectGroupLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_group_label'),
         ]);
+
+        $this->setMultiselectSlots([
+            'noOptions'=>$this->getNoOptionsSlot()
+        ]);
+    }
+
+    protected function getNoOptionsSlot()
+    {
+        return __('belongs-to-many-field-nova::vue-multiselect.no_options');
     }
 }
