@@ -45,6 +45,8 @@
 </template>
 
 <script>
+  import get from 'lodash.get'
+  
   export default {
     props: ["resource", "resourceName", "resourceId", "field"],
     methods: {
