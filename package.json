@@ -15,6 +15,7 @@
         "laravel-nova": "^1.0"
     },
     "dependencies": {
+        "lodash.get": "^4.4.2",
         "vue": "^2.5.0",
         "vue-multiselect": "^2.1.3"
     }
