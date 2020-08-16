@@ -162,7 +162,7 @@
             this.loading = true;
             Nova.request(
               baseUrl +
-              this.resourceName +
+              this.resourceName + ((this.resourceId) ? `/${this.resourceId}` : '') +
               "/" +
               "options/" +
               this.field.attribute +
@@ -181,7 +181,7 @@
         } else {
           Nova.request(
             baseUrl +
-            this.resourceName +
+            this.resourceName + ((this.resourceId) ? `/${this.resourceId}` : '') +
             "/" +
             "options/" +
             this.field.attribute
@@ -191,6 +191,7 @@
           });
         }
       },
+
 
       /**
        * Fill the given FormData object with the field's internal value.

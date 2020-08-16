@@ -7,25 +7,28 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ResourceController
 {
-    public function index(NovaRequest $request, $parent, $attribute, $dependsOnValue = null, $dependsOnKey = null)
+    public function index(NovaRequest $request)
     {
         $resourceClass = $request->newResource();
         $field = $resourceClass
             ->availableFields($request)
             ->where('component', 'BelongsToManyField')
-            ->where('attribute', $attribute)
+            ->where('attribute', $request->field)
             ->first();
 
         /**
-         * TODO: Include trashed values.
-         */
-        $queryResult = $field->buildAttachableQuery($request, false);
+        * TODO: Include trashed values.
+        */
+        $query = $field->buildAttachableQuery($request, false);
 
-        if($dependsOnValue){
-          $queryResult = $queryResult->where($dependsOnKey, $dependsOnValue);
+        if($request->dependsOnValue){
+            $query = $query->where(
+                $request->dependsOnKey,
+                $request->dependsOnValue
+            );
         }
 
-        return $queryResult->get()
+        return $query->get()
             ->mapInto($field->resourceClass)
             ->filter(function ($resource) use ($request, $field) {
                 return $request->newResource()->authorizedToAttach($request, $resource->resource);

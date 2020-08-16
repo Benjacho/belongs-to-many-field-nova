@@ -1282,7 +1282,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       if (this.isDependant) {
         if (this.dependsOnValue) {
           this.loading = true;
-          Nova.request(baseUrl + this.resourceName + "/" + "options/" + this.field.attribute + "/" + this.dependsOnValue + "/" + this.field.dependsOnKey).then(function (data) {
+          Nova.request(baseUrl + this.resourceName + (this.resourceId ? "/" + this.resourceId : '') + "/" + "options/" + this.field.attribute + "/" + this.dependsOnValue + "/" + this.field.dependsOnKey).then(function (data) {
             _this2.options = data.data;
             _this2.loading = false;
           });
@@ -1291,7 +1291,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           this.loading = false;
         }
       } else {
-        Nova.request(baseUrl + this.resourceName + "/" + "options/" + this.field.attribute).then(function (data) {
+        Nova.request(baseUrl + this.resourceName + (this.resourceId ? "/" + this.resourceId : '') + "/" + "options/" + this.field.attribute).then(function (data) {
           _this2.options = data.data;
           _this2.loading = false;
         });
