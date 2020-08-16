@@ -17,9 +17,9 @@
               }"
                 class="no-underline dim text-primary font-bold"
                 v-if="field.viewable"
-              >{{resource[field.optionsLabel]}}
+              >{{resource['label']}}
               </router-link>
-              <span v-else>{{resource[field.optionsLabel]}}</span>
+              <span v-else>{{resource['label']}}</span>
             </div>
           </div>
         </div>
@@ -36,8 +36,8 @@
           }"
           class="no-underline dim text-primary font-bold"
           v-if="field.viewable"
-        >{{resource[field.optionsLabel]}}</router-link>
-        <span v-else>{{resource[field.optionsLabel]}}</span>
+        >{{resource['label']}}</router-link>
+        <span v-else>{{resource['label']}}</span>
       </span>
       </div>
     </div>
@@ -48,6 +48,7 @@
   export default {
     props: ["resource", "resourceName", "resourceId", "field"],
     mounted() {
+      console.log( this.field ); 
       if (this.field.showAsList) {
         console.log(this.field)
       }

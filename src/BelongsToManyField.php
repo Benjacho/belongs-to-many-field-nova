@@ -6,10 +6,23 @@ use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
 use Laravel\Nova\Fields\ResourceRelationshipGuesser;
+use Laravel\Nova\Fields\FormatsRelatableDisplayValues;
+use Laravel\Nova\TrashedStatus;
+use Illuminate\Support\Str;
 
 
 class BelongsToManyField extends Field
 {
+
+    use FormatsRelatableDisplayValues;
+
+    /**
+     * The column that should be displayed for the field.
+     *
+     * @var \Closure
+     */
+    public $display;
+
     public $showOnIndex = true;
     public $showOnDetail = true;
     public $isAction = false;
@@ -47,10 +60,11 @@ class BelongsToManyField extends Field
         $resource = $resource ?? ResourceRelationshipGuesser::guessResource($name);
 
         $this->resource = $resource;
-
         $this->resourceClass = $resource;
         $this->resourceName = $resource::uriKey();
         $this->manyToManyRelationship = $this->attribute;
+
+        // Syncing relationships after saving the main model.
         $this->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($resource) {
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
                 $model::saved(function ($model) use ($attribute, $request) {
@@ -71,17 +85,12 @@ class BelongsToManyField extends Field
         });
     }
 
-    public function optionsLabel(string $optionsLabel)
-    {
-        $this->label = $optionsLabel;
-        return $this->withMeta(['optionsLabel' => $this->label]);
-    }
-
     public function options($options)
     {
         $options = collect($options);
         return $this->withMeta(['options' => $options]);
     }
+
 
     public function relationModel($model)
     {
@@ -133,16 +142,14 @@ class BelongsToManyField extends Field
 
     public function resolve($resource, $attribute = null)
     {
-        if ($this->isAction) {
-            parent::resolve($resource, $attribute);
-        } else {
-            parent::resolve($resource, $attribute);
-            $value = json_decode($resource->{$this->attribute});
-            if ($value) {
-                $this->value = $value;
-            }
-        }
+        parent::resolve($resource, $attribute);
+
+        $this->value = $resource->{$this->attribute}
+            ->map( function ($res) {
+                return $this->formatDisplayValues( $res );
+            });
     }
+
 
     public function jsonSerialize()
     {
@@ -152,7 +159,6 @@ class BelongsToManyField extends Field
             'indexName' => $this->name,
             'name' => $this->name,
             'nullable' => $this->nullable,
-            'optionsLabel' => $this->label,
             'panel' => $this->panel,
             'prefixComponent' => true,
             'readonly' => $this->isReadonly(app(NovaRequest::class)),
@@ -177,4 +183,74 @@ class BelongsToManyField extends Field
 
         return $this;
     }
+
+
+    /**
+     * Build an attachable query for the field.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  bool  $withTrashed
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function buildAttachableQuery(NovaRequest $request, $withTrashed = false)
+    {
+        $model = forward_static_call([$resourceClass = $this->resourceClass, 'newModel']);
+
+        $query = $request->first === 'true'
+                            ? $model->newQueryWithoutScopes()->whereKey($request->current)
+                            : $resourceClass::buildIndexQuery(
+                                    $request, $model->newQuery(), $request->search,
+                                    [], [], TrashedStatus::fromBoolean($withTrashed)
+                              );
+
+        return $query->tap(function ($query) use ($request, $model) {
+            forward_static_call($this->attachableQueryCallable($request, $model), $request, $query);
+        });
+    }
+
+    /**
+     * Get the attachable query method name.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return array
+     */
+    protected function attachableQueryCallable(NovaRequest $request, $model)
+    {
+        return ($method = $this->attachableQueryMethod($request, $model))
+                    ? [$request->resource(), $method]
+                    : [$this->resourceClass, 'relatableQuery'];
+    }
+
+    /**
+     * Get the attachable query method name.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return string
+     */
+    protected function attachableQueryMethod(NovaRequest $request, $model)
+    {
+        $method = 'relatable'.Str::plural(class_basename($model));
+
+        if (method_exists($request->resource(), $method)) {
+            return $method;
+        }
+    }
+
+
+    /**
+     * Formats the display values to show in the different views.
+     *
+     * @param  mixed $resource
+     * @return array
+     */
+    public function formatDisplayValues($resource)
+    {
+        return [
+            'id' => $resource->getKey(),
+            'label' => $this->formatDisplayValue($resource)
+        ];
+    }
+
 }

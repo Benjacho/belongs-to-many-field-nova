@@ -2,4 +2,4 @@
 
 use Benjacho\BelongsToManyField\Http\Controllers\ResourceController;
 
-Route::get('/{resource}/options/{relationship}/{optionsLabel}/{dependsOnValue?}/{dependsOnKey?}', [ResourceController::class, 'index']);
+Route::get('/{resource}/options/{field}/{dependsOnValue?}/{dependsOnKey?}', [ResourceController::class, 'index']);

@@ -12,9 +12,12 @@
           <input type="checkbox" id="checkbox" class="checkbox" v-model="selectAll">
           <label for="checkbox">{{this.field.messageSelectAll}}</label>
         </div>
-<!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
-          <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
-                        v-bind="multiSelectProps" v-model="value"/>
+          <multi-select
+            ref="multiselect"
+            @open="() => repositionDropdown(true)"
+            :options="options"
+            v-bind="multiSelectProps"
+            v-model="value"/>
       </div>
     </template>
   </default-field>
@@ -35,7 +38,6 @@
     data() {
       return {
         options: [],
-        optionsLabel: "name",
         dependsOnValue: null,
         isDependant: false,
         shouldClear: false,
@@ -60,8 +62,8 @@
       multiSelectProps() {
         return {
           multiple: true,
-          label: this.optionsLabel,
-          trackBy: this.optionsLabel,
+          trackBy: 'id',
+          label: 'label',
           preselectFirst: false,
           class: this.errorClasses,
           placeholder: this.field.name,
@@ -143,9 +145,6 @@
        * Set the initial, internal value for the field.
        */
       setInitialValue() {
-        this.optionsLabel = this.field.optionsLabel
-          ? this.field.optionsLabel
-          : "name";
         this.value = this.field.value || "";
         this.fetchOptions();
       },
@@ -168,8 +167,6 @@
               "options/" +
               this.field.attribute +
               "/" +
-              this.optionsLabel +
-              "/" +
               this.dependsOnValue +
               "/" +
               this.field.dependsOnKey
@@ -187,9 +184,7 @@
             this.resourceName +
             "/" +
             "options/" +
-            this.field.attribute +
-            "/" +
-            this.optionsLabel
+            this.field.attribute
           ).then(data => {
             this.options = data.data;
             this.loading = false;

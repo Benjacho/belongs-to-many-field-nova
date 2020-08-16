@@ -11,8 +11,8 @@
         }"
         class="no-underline dim text-primary font-bold"
         v-if="field.viewable"
-      >{{resource[field.optionsLabel]}}</router-link>
-      <span v-else>{{resource[field.optionsLabel]}}</span>
+      >{{resource['label']}}</router-link>
+      <span v-else>{{resource['label']}}</span>
     </span>
   </div>
 </template>
