@@ -163,6 +163,7 @@ class BelongsToManyField extends Field
             'textAlign' => $this->textAlign,
             'value' => $this->value,
             'viewable' => $this->viewable,
+            'validationKey' => $this->validationKey(),
         ], $this->meta());
     }
 
