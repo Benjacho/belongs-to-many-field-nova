@@ -4,15 +4,22 @@ namespace Benjacho\BelongsToManyField\Http\Controllers;
 
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\FieldCollection;
 
 class ResourceController
 {
     public function index(NovaRequest $request, $parent, $relationship, $optionsLabel, $dependsOnValue = null, $dependsOnKey = null)
     {
         $resourceClass = $request->newResource();
-        $field = $resourceClass
-            ->availableFields($request)
-            ->where('component', 'BelongsToManyField')
+        $fieldCollection = $resourceClass->availableFields($request);
+        $field = $fieldCollection->reduce(function ($carry, $item) {
+            if ($item->component === 'nova-dependency-container') {
+                $carry = $carry->merge($item->meta()['fields']);
+            } else {
+                $carry->push($item);
+            }
+            return $carry;
+        }, FieldCollection::make([]))->where('component', 'BelongsToManyField')
             ->where('attribute', $relationship)
             ->first();
         $query = $field->resourceClass::newModel();
