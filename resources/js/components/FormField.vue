@@ -146,8 +146,23 @@
         this.optionsLabel = this.field.optionsLabel
           ? this.field.optionsLabel
           : "name";
-        this.value = this.field.value || "";
+        this.value = this.processValue(this.field.value) || "";
         this.fetchOptions();
+      },
+
+      processValue(value) {
+        if (value) {
+            for (let key in value) {
+                if (value.hasOwnProperty(key)) {
+                    if (value[key][this.optionsLabel] instanceof Object) {
+                        if (value[key][this.optionsLabel].hasOwnProperty(this.field.language)) {
+                            value[key][this.optionsLabel] = value[key][this.optionsLabel][this.field.language];
+                        }
+                    }
+                }
+            }
+        }
+        return value;
       },
 
       fetchOptions() {

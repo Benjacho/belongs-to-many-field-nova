@@ -2,6 +2,7 @@
 
 namespace Benjacho\BelongsToManyField;
 
+use Illuminate\Support\Facades\App;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
@@ -19,6 +20,7 @@ class BelongsToManyField extends Field
     public $viewable = true;
     public $showAsList = false;
     public $pivotData = [];
+    public $language = "en";
 
     /**
      * The field's component.
@@ -31,6 +33,7 @@ class BelongsToManyField extends Field
     public $relationModel;
 
     public $label = "name";
+
 
     /**
      * Create a new field.
@@ -51,6 +54,9 @@ class BelongsToManyField extends Field
         $this->resourceClass = $resource;
         $this->resourceName = $resource::uriKey();
         $this->manyToManyRelationship = $this->attribute;
+
+        $this->language = App::getLocale();
+
         $this->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($resource) {
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
                 $model::saved(function ($model) use ($attribute, $request) {
@@ -77,6 +83,7 @@ class BelongsToManyField extends Field
         return $this->withMeta(['optionsLabel' => $this->label]);
     }
 
+
     public function options($options)
     {
         $options = collect($options);
@@ -96,9 +103,9 @@ class BelongsToManyField extends Field
     }
 
     public function canSelectAll($messageSelectAll = 'Select All', $selectAll = true){
-      $this->selectAll = $selectAll;
-      $this->messageSelectAll = $messageSelectAll;
-      return $this->withMeta(['selectAll' => $this->selectAll, 'messageSelectAll' => $this->messageSelectAll]);
+        $this->selectAll = $selectAll;
+        $this->messageSelectAll = $messageSelectAll;
+        return $this->withMeta(['selectAll' => $this->selectAll, 'messageSelectAll' => $this->messageSelectAll]);
     }
 
     public function showAsListInDetail($showAsList = true){
@@ -109,6 +116,12 @@ class BelongsToManyField extends Field
     public function viewable($viewable = true)
     {
         $this->viewable = $viewable;
+        return $this;
+    }
+
+    public function language($language = 'en')
+    {
+        $this->language = $language;
         return $this;
     }
 
@@ -163,6 +176,7 @@ class BelongsToManyField extends Field
             'textAlign' => $this->textAlign,
             'value' => $this->value,
             'viewable' => $this->viewable,
+            'language' => $this->language,
         ], $this->meta());
     }
 
