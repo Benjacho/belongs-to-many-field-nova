@@ -2,6 +2,7 @@
 
 namespace Benjacho\BelongsToManyField;
 
+use Illuminate\Support\Facades\App;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
@@ -53,6 +54,8 @@ class BelongsToManyField extends Field
         $this->resourceClass = $resource;
         $this->resourceName = $resource::uriKey();
         $this->manyToManyRelationship = $this->attribute;
+
+        $this->language = App::getLocale();
 
         $this->fillUsing(function ($request, $model, $attribute, $requestAttribute) use ($resource) {
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
