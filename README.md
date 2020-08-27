@@ -44,7 +44,7 @@ public function fields(Request $request){
 | `dependsOn`                   | String, String  | null, null | This method allows you to depend on belongsto field, this make an auto query                                                                                                 |
 | `canSelectAll`                | String, Boolean | 'Select All', true | This method allows you to have a select all checkbox and display custom message                                                                                              |
 | `showAsListInDetail`          | Boolean         | true       | This method allows you to display as list in detail                                                                                             |
-| `language`                    | String          | 'en'       | This method allows for the correct display of translatable models |
+| `language`                    | String          | Current Locale       | This method allows for the correct display of translatable models |
 - Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to label by another column name. By default it tracks by label 'name'.
 
 IMPORTANT
@@ -112,7 +112,7 @@ public function handle(ActionFields $fields, Collection $models)
 
 ```php
      BelongsToManyField::make('Participants', 'participant', 'App\Nova\Participant')
-     ->language('fr'),
+     ->language('en'),
 ```
 
 ### Validations
