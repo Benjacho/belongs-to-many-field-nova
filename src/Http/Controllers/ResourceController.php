@@ -21,7 +21,7 @@ class ResourceController
         */
         $query = $field->buildAttachableQuery($request, false);
 
-        if($request->dependsOnValue){
+        if ($request->dependsOnValue) {
             $query = $query->where(
                 $request->dependsOnKey,
                 $request->dependsOnValue

@@ -10,10 +10,8 @@ use Laravel\Nova\Fields\FormatsRelatableDisplayValues;
 use Laravel\Nova\TrashedStatus;
 use Illuminate\Support\Str;
 
-
 class BelongsToManyField extends Field
 {
-
     use FormatsRelatableDisplayValues;
 
     /**
@@ -69,10 +67,11 @@ class BelongsToManyField extends Field
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
                 $model::saved(function ($model) use ($attribute, $request) {
                     $inp = json_decode($request->$attribute, true);
-                    if ($inp !== null)
+                    if ($inp !== null) {
                         $values = array_column($inp, 'id');
-                    else
+                    } else {
                         $values = [];
+                    }
                     if (!empty($this->pivot())) {
                         $values = array_fill_keys($values, $this->pivot());
                     }
@@ -104,13 +103,15 @@ class BelongsToManyField extends Field
         return $this->withMeta(['height' => $this->height]);
     }
 
-    public function canSelectAll($messageSelectAll = 'Select All', $selectAll = true){
-      $this->selectAll = $selectAll;
-      $this->messageSelectAll = $messageSelectAll;
-      return $this->withMeta(['selectAll' => $this->selectAll, 'messageSelectAll' => $this->messageSelectAll]);
+    public function canSelectAll($messageSelectAll = 'Select All', $selectAll = true)
+    {
+        $this->selectAll = $selectAll;
+        $this->messageSelectAll = $messageSelectAll;
+        return $this->withMeta(['selectAll' => $this->selectAll, 'messageSelectAll' => $this->messageSelectAll]);
     }
 
-    public function showAsListInDetail($showAsList = true){
+    public function showAsListInDetail($showAsList = true)
+    {
         $this->showAsList = $showAsList;
         return $this->withMeta(['showAsList' => $this->showAsList]);
     }
@@ -126,7 +127,8 @@ class BelongsToManyField extends Field
         return $this->withMeta(['multiselectOptions' => $props]);
     }
 
-    public function dependsOn($dependsOnField, $tableKey){
+    public function dependsOn($dependsOnField, $tableKey)
+    {
         return $this->withMeta([
             'dependsOn' => $dependsOnField,
             'dependsOnKey' => $tableKey
@@ -145,8 +147,8 @@ class BelongsToManyField extends Field
         parent::resolve($resource, $attribute);
 
         $this->value = $resource->{$this->attribute}
-            ->map( function ($res) {
-                return $this->formatDisplayValues( $res );
+            ->map(function ($res) {
+                return $this->formatDisplayValues($res);
             });
     }
 
@@ -199,9 +201,13 @@ class BelongsToManyField extends Field
         $query = $request->first === 'true'
                             ? $model->newQueryWithoutScopes()->whereKey($request->current)
                             : $resourceClass::buildIndexQuery(
-                                    $request, $model->newQuery(), $request->search,
-                                    [], [], TrashedStatus::fromBoolean($withTrashed)
-                              );
+                                $request,
+                                $model->newQuery(),
+                                $request->search,
+                                [],
+                                [],
+                                TrashedStatus::fromBoolean($withTrashed)
+                            );
 
         return $query->tap(function ($query) use ($request, $model) {
             forward_static_call($this->attachableQueryCallable($request, $model), $request, $query);
@@ -252,5 +258,4 @@ class BelongsToManyField extends Field
             'label' => $this->formatDisplayValue($resource)
         ];
     }
-
 }
