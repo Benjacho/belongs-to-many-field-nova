@@ -32,6 +32,9 @@ class BelongsToManyField extends Field
 
     public $label = "name";
 
+    protected $creatable = false;
+    protected $creatableAttributes = [];
+
     /**
      * Create a new field.
      *
@@ -55,13 +58,13 @@ class BelongsToManyField extends Field
             if (is_subclass_of($model, 'Illuminate\Database\Eloquent\Model')) {
                 $model::saved(function ($model) use ($attribute, $request) {
                     $inp = json_decode($request->$attribute, true);
-                    if ($inp !== null)
-                        $values = array_column($inp, 'id');
-                    else
-                        $values = [];
+
+                    $values = $this->getRelatedIds($inp);
+
                     if (!empty($this->pivot())) {
                         $values = array_fill_keys($values, $this->pivot());
                     }
+
                     $model->$attribute()->sync(
                         $values
                     );
@@ -177,5 +180,53 @@ class BelongsToManyField extends Field
         $this->pivotData = $attributes;
 
         return $this;
+    }
+
+    public function creatable(string $placeholder = null, array $attributes = [], bool $creatable = true)
+    {
+        $this->creatable = $creatable;
+        $this->creatableAttributes = $attributes;
+
+        $multiselectOptions = $this->meta()['multiselectOptions'] ?? [];
+
+        $multiselectOptions['taggable'] = $creatable;
+
+        if ($placeholder) {
+            $multiselectOptions['tag-placeholder'] = $placeholder;
+        }
+
+        return $this->withMeta([
+            'creatable' => $this->creatable,
+            'multiselectOptions' => $multiselectOptions,
+        ]);
+    }
+
+    protected function getRelatedIds(?array $values)
+    {
+        $ids = [];
+
+        if ($values === null) {
+            return $ids;
+        }
+
+        foreach ($values as $value) {
+            if ($this->creatable && $value['id'] === null) {
+                $ids[] = $this->createRelated($value)->getKey();
+            } else {
+                $ids[] = $value['id'];
+            }
+        }
+
+        return $ids;
+    }
+
+    protected function createRelated(array $value)
+    {
+        $relatedModel = $this->resourceClass::$model;
+
+        return $relatedModel::create(array_merge(
+            $this->creatableAttributes,
+            [$this->label => $value[$this->label]]
+        ));
     }
 }

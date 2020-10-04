@@ -13,8 +13,14 @@
           <label for="checkbox">{{this.field.messageSelectAll}}</label>
         </div>
 <!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
-          <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
-                        v-bind="multiSelectProps" v-model="value"/>
+          <multi-select
+              ref="multiselect"
+              @open="() => repositionDropdown(true)"
+              :options="options"
+              v-bind="multiSelectProps"
+              v-model="value"
+              v-on="{ tag: this.field.creatable ? addNew : null }"
+          />
       </div>
     </template>
   </default-field>
@@ -210,6 +216,17 @@
       handleChange(value) {
         this.value = value;
         this.$nextTick(() => this.repositionDropdown());
+      },
+
+      addNew(name) {
+        const newValue = {
+          id: null,
+          [this.optionsLabel]: name,
+          value: name + Math.floor((Math.random() * 10000000)),
+        };
+
+        this.options.push(newValue);
+        this.value.push(newValue);
       }
     }
   };

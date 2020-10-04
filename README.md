@@ -44,6 +44,7 @@ public function fields(Request $request){
 | `dependsOn`                   | String, String  | null, null | This method allows you to depend on belongsto field, this make an auto query                                                                                                 |
 | `canSelectAll`                | String, Boolean | 'Select All', true | This method allows you to have a select all checkbox and display custom message                                                                                              |
 | `showAsListInDetail`          | Boolean         | true       | This method allows you to display as list in detail                                                                                             |
+| `creatable`                   | String, Array, Boolean | null, [], true | This method allows you to create a related resource                                                                                          |
 
 - Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to label by another column name. By default it tracks by label 'name'.
 
@@ -106,6 +107,18 @@ public function handle(ActionFields $fields, Collection $models)
 ```php
      BelongsToManyField::make('Participants', 'participant', 'App\Nova\Participant')
      ->showAsListInDetail(),
+```
+
+- Method creatable(), This method allows you to create related resource
+
+```php
+    // simple
+     BelongsToManyField::make('Participants', 'participant', 'App\Nova\Participant')
+     ->creatable(),
+
+    // with settings
+     BelongsToManyField::make('Participants', 'participant', 'App\Nova\Participant')
+     ->creatable('Create new participant', ['additional_participant_field' => 'value']),
 ```
 
 ### Validations
