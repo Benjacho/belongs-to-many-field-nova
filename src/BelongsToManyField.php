@@ -6,10 +6,13 @@ use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
 use Laravel\Nova\Fields\ResourceRelationshipGuesser;
+use Laravel\Nova\Fields\DeterminesIfCreateRelationCanBeShown;
 
 
 class BelongsToManyField extends Field
 {
+    use DeterminesIfCreateRelationCanBeShown;
+
     public $showOnIndex = true;
     public $showOnDetail = true;
     public $isAction = false;
@@ -164,6 +167,7 @@ class BelongsToManyField extends Field
             'value' => $this->value,
             'viewable' => $this->viewable,
             'validationKey' => $this->validationKey(),
+            'showCreateRelationButton' => $this->createRelationShouldBeShown(app(NovaRequest::class)),
         ], $this->meta());
     }
 

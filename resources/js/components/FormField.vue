@@ -1,21 +1,36 @@
 <template>
-  <default-field :field="field" :errors="errors">
+  <default-field :field="field" :errors="errors" :show-help-text="showHelpText">
     <template slot="field">
-      <div :style="{height: field.height ? field.height : 'auto'}" class="relative">
-        <div
-          v-if="loading"
-          class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white"
-        >
-          <loader class="text-60"/>
-        </div>
-        <div v-if="this.field.selectAll" class="mb-2">
-          <input type="checkbox" id="checkbox" class="checkbox" v-model="selectAll">
-          <label for="checkbox">{{this.field.messageSelectAll}}</label>
-        </div>
-<!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
+      <div class="flex items-center">
+        <div :style="{height: field.height ? field.height : 'auto'}" class="relative w-full">
+          <div v-if="loading" class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white">
+            <loader class="text-60"/>
+          </div>
+          <div v-if="this.field.selectAll" class="mb-2">
+            <input type="checkbox" id="checkbox" class="checkbox" v-model="selectAll">
+            <label for="checkbox">{{this.field.messageSelectAll}}</label>
+          </div>
           <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
                         v-bind="multiSelectProps" v-model="value"/>
+        </div>
+
+        <create-relation-button
+          v-if="canShowNewRelationModal()"
+          @click="openRelationModal"
+          class="ml-1"
+        />
       </div>
+
+      <!-- Create Relation Modal -->
+      <portal to="modals" transition="fade-transition">
+        <create-relation-modal
+          v-if="relationModalOpen"
+          @set-resource="handleSetResource"
+          @cancelled-create="closeRelationModal"
+          :resource-name="field.resourceNameRelationship"
+          width="800"
+        />
+      </portal>
     </template>
   </default-field>
 </template>
@@ -41,6 +56,7 @@
         shouldClear: false,
         loading: true,
         selectAll:false,
+        relationModalOpen: false,
       };
     },
     mounted() {
@@ -102,6 +118,7 @@
         if (onOpen) this.$nextTick(handlePositioning);
         else handlePositioning();
       },
+
       registerDependencyWatchers(root) {
         root.$children.forEach(component => {
           if (this.componentIsDependency(component)) {
@@ -139,6 +156,7 @@
         this.dependsOnValue = value.value;
         this.fetchOptions()
       },
+
       /*
        * Set the initial, internal value for the field.
        */
@@ -157,10 +175,36 @@
           return;
         }
 
-        let baseUrl = "/nova-vendor/belongs-to-many-field/";
-        if (this.isDependant) {
-          if (this.dependsOnValue) {
-            this.loading = true;
+        this.fetchOptionsFromServer()
+      },
+
+      fetchOptionsFromServer() {
+        return new Promise((resolve, reject) => {
+          let baseUrl = "/nova-vendor/belongs-to-many-field/";
+          if (this.isDependant) {
+            if (this.dependsOnValue) {
+              this.loading = true;
+              Nova.request(
+                baseUrl +
+                this.resourceName +
+                "/" +
+                "options/" +
+                this.field.attribute +
+                "/" +
+                this.optionsLabel +
+                "/" +
+                this.dependsOnValue +
+                "/" +
+                this.field.dependsOnKey
+              ).then(data => {
+                this.options = data.data;
+                this.loading = false;
+              }).finally(() => resolve());
+            } else {
+              this.options = [];
+              this.loading = false;
+            }
+          } else {
             Nova.request(
               baseUrl +
               this.resourceName +
@@ -168,33 +212,13 @@
               "options/" +
               this.field.attribute +
               "/" +
-              this.optionsLabel +
-              "/" +
-              this.dependsOnValue +
-              "/" +
-              this.field.dependsOnKey
+              this.optionsLabel
             ).then(data => {
               this.options = data.data;
               this.loading = false;
-            });
-          } else {
-            this.options = [];
-            this.loading = false;
+            }).finally(() => resolve());
           }
-        } else {
-          Nova.request(
-            baseUrl +
-            this.resourceName +
-            "/" +
-            "options/" +
-            this.field.attribute +
-            "/" +
-            this.optionsLabel
-          ).then(data => {
-            this.options = data.data;
-            this.loading = false;
-          });
-        }
+        })
       },
 
       /**
@@ -210,7 +234,54 @@
       handleChange(value) {
         this.value = value;
         this.$nextTick(() => this.repositionDropdown());
-      }
+      },
+
+      /**
+       * Open the create relation modal.
+       */
+      openRelationModal() {
+        this.relationModalOpen = true
+      },
+
+      /**
+       * Close the create relation modal.
+       */
+      closeRelationModal() {
+        this.relationModalOpen = false
+      },
+
+      // Check if the user is authorized to create the resource.
+      authorizedToCreate() {
+        return _.find(Nova.config.resources, resource => {
+          return resource.uriKey == this.field.resourceNameRelationship
+        }).authorizedToCreate
+      },
+
+      /**
+       * Handle the create relation modal.
+       */
+      handleSetResource({ id }) {
+        this.closeRelationModal()
+        this.fetchOptionsFromServer().then(() => {
+          const valueToAdd = this.options.find((option) => option.id === id)
+          if (valueToAdd) {
+            this.value.push(valueToAdd)
+          }
+        })
+      },
+
+      /**
+       * Check if the create relation modal should can be shown.
+       */
+      canShowNewRelationModal() {
+        return (
+          this.field.showCreateRelationButton &&
+          !this.shownViaNewRelationModal &&
+          !this.isLocked &&
+          !this.isReadonly &&
+          this.authorizedToCreate
+        )
+      },
     }
   };
 </script>
