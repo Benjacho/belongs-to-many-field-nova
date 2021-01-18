@@ -105,9 +105,10 @@
       registerDependencyWatchers(root) {
         root.$children.forEach(component => {
           if (this.componentIsDependency(component)) {
-            if (component.selectedResourceId !== undefined) {
-              let attribute = this.findWatchableComponentAttribute(component);
-              component.$watch(attribute, this.dependencyWatcher, {immediate: true});
+            let attribute = this.findWatchableComponentAttribute(component);
+            component.$watch(attribute, this.dependencyWatcher, {immediate: true});
+
+            if (component.selectedResourceId) {
               this.dependencyWatcher(component.selectedResourceId)
             }
           }
