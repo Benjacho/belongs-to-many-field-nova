@@ -19,6 +19,7 @@ class BelongsToManyField extends Field
     public $viewable = true;
     public $showAsList = false;
     public $pivotData = [];
+    public $keyField = 'id';
 
     /**
      * The field's component.
@@ -56,7 +57,9 @@ class BelongsToManyField extends Field
                 $model::saved(function ($model) use ($attribute, $request) {
                     $inp = json_decode($request->$attribute, true);
                     if ($inp !== null)
-                        $values = array_column($inp, 'id');
+                        $values = array_map(function($item) use ($model) {
+                            return !empty($item['value']) ? $item['value'] : $item[$model->getKeyName()];
+                        }, $inp);
                     else
                         $values = [];
                     if (!empty($this->pivot())) {
@@ -124,6 +127,12 @@ class BelongsToManyField extends Field
         ]);
     }
 
+    public function setKeyField(string $keyField = 'id')
+    {
+        $this->keyField = $keyField;
+        return $this;
+    }
+
     public function rules($rules)
     {
         $rules = ($rules instanceof Rule || is_string($rules)) ? func_get_args() : $rules;
@@ -162,6 +171,7 @@ class BelongsToManyField extends Field
             'stacked' => $this->stacked,
             'textAlign' => $this->textAlign,
             'value' => $this->value,
+            'keyField' => $this->keyField,
             'viewable' => $this->viewable,
             'validationKey' => $this->validationKey(),
         ], $this->meta());

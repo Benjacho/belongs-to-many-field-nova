@@ -15,6 +15,8 @@
         "laravel-nova": "^1.0"
     },
     "dependencies": {
+        "imagemin-pngquant": "^5.0.1",
+        "pngquant-bin": "^3.1.1",
         "vue": "^2.5.0",
         "vue-multiselect": "^2.1.3"
     }

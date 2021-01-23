@@ -12,7 +12,7 @@
                 name: 'detail',
                 params: {
                   resourceName: field.resourceNameRelationship,
-                  resourceId: resource.id,
+                  resourceId: resource[field.keyField],
                 },
               }"
                 class="no-underline dim text-primary font-bold"
@@ -31,7 +31,7 @@
             name: 'detail',
             params: {
               resourceName: field.resourceNameRelationship,
-              resourceId: resource.id,
+              resourceId: resource[field.keyField],
             },
           }"
           class="no-underline dim text-primary font-bold"
@@ -47,11 +47,6 @@
 <script>
   export default {
     props: ["resource", "resourceName", "resourceId", "field"],
-    mounted() {
-      if (this.field.showAsList) {
-        console.log(this.field)
-      }
-    }
   };
 </script>
 

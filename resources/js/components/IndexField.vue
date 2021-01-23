@@ -6,7 +6,7 @@
           name: 'detail',
           params: {
             resourceName: field.resourceNameRelationship,
-            resourceId: resource.id,
+            resourceId: resource[field.keyField],
           },
         }"
         class="no-underline dim text-primary font-bold"
