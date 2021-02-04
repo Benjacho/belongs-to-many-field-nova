@@ -34,6 +34,7 @@ class ResourceController
                     'value' => $resource->getKey(),
                 ];
             })
+            ->sortBy($optionsLabel)
             ->values();
     }
 }
