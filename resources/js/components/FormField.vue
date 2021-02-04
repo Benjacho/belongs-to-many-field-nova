@@ -1,5 +1,5 @@
 <template>
-  <default-field :field="field" :errors="errors">
+  <default-field :field="field" :errors="errors" :show-help-text="true">
     <template slot="field">
       <div :style="{height: field.height ? field.height : 'auto'}" class="relative">
         <div
@@ -12,7 +12,6 @@
           <input type="checkbox" id="checkbox" class="checkbox" v-model="selectAll">
           <label for="checkbox">{{this.field.messageSelectAll}}</label>
         </div>
-<!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
           <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
                         v-bind="multiSelectProps" v-model="value"/>
       </div>
@@ -40,7 +39,7 @@
         isDependant: false,
         shouldClear: false,
         loading: true,
-        selectAll:false,
+        selectAll: false,
       };
     },
     mounted() {
@@ -70,8 +69,8 @@
       }
     },
     watch: {
-      selectAll(value){
-        if(value){
+      selectAll(value) {
+        if (value) {
           this.value = [...this.options];
         } else {
           this.value = [];

@@ -165,6 +165,7 @@ class BelongsToManyField extends Field
         return array_merge([
             'attribute' => $this->attribute,
             'component' => $this->component(),
+            'helpText' => $this->getHelpText(),
             'indexName' => $this->name,
             'name' => $this->name,
             'nullable' => $this->nullable,
