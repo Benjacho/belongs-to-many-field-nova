@@ -19,9 +19,10 @@ class ResourceController
 
         $queryResult = $field->resourceClass::relatableQuery($request, $query);
 
-        if($dependsOnValue){
-          $queryResult = $queryResult->where($dependsOnKey, $dependsOnValue);
+        if ($dependsOnValue) {
+            $queryResult = $queryResult->where($dependsOnKey, $dependsOnValue);
         }
+
         return $queryResult->get()
             ->mapInto($field->resourceClass)
             ->filter(function ($resource) use ($request, $field) {
