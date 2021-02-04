@@ -160,6 +160,7 @@ class BelongsToManyField extends Field
             'panel' => $this->panel,
             'prefixComponent' => true,
             'readonly' => $this->isReadonly(app(NovaRequest::class)),
+            'required' => $this->isRequired(app(NovaRequest::class)),
             'resourceNameRelationship' => $this->resourceName,
             'sortable' => $this->sortable,
             'sortableUriKey' => $this->sortableUriKey(),
