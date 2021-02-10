@@ -41,6 +41,7 @@
         shouldClear: false,
         loading: true,
         selectAll:false,
+        editModeQueryString: '',
       };
     },
     mounted() {
@@ -54,6 +55,13 @@
         this.isDependant = true;
         this.registerDependencyWatchers(this.$root)
       }
+      const editModes = {
+        create: 'create',
+        edit: 'update',
+        attach: 'attach',
+        'edit-attached': 'update-attached'
+      };
+      this.editModeQueryString = 'editing=true&editMode=' + editModes[this.$route.name];
     },
 
     computed: {
@@ -67,7 +75,7 @@
           placeholder: this.field.name,
           ...(this.field.multiselectOptions ? this.field.multiselectOptions : {})
         };
-      }
+      },
     },
     watch: {
       selectAll(value){
@@ -172,7 +180,9 @@
               "/" +
               this.dependsOnValue +
               "/" +
-              this.field.dependsOnKey
+              this.field.dependsOnKey + 
+              "?" + 
+              this.editModeQueryString
             ).then(data => {
               this.options = data.data;
               this.loading = false;
@@ -189,7 +199,9 @@
             "options/" +
             this.field.attribute +
             "/" +
-            this.optionsLabel
+            this.optionsLabel + 
+            "?" + 
+            this.editModeQueryString
           ).then(data => {
             this.options = data.data;
             this.loading = false;
