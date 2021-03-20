@@ -155,13 +155,7 @@ class BelongsToManyField extends Field
 
     public function jsonSerialize()
     {
-        if (isset($this->optionsCallback)) {
-            if (is_callable($this->optionsCallback)) {
-                $this->withMeta(['options' => call_user_func($this->optionsCallback)]);
-            } else {
-                $this->withMeta(['options' => collect($this->optionsCallback)]);
-            }
-        }
+        $this->resolveOptions();
 
         return array_merge([
             'attribute' => $this->attribute,
@@ -194,5 +188,16 @@ class BelongsToManyField extends Field
         $this->pivotData = $attributes;
 
         return $this;
+    }
+
+    private function resolveOptions(): void
+    {
+        if (isset($this->optionsCallback)) {
+            if (is_callable($this->optionsCallback)) {
+                $this->withMeta(['options' => call_user_func($this->optionsCallback)]);
+            } else {
+                $this->withMeta(['options' => collect($this->optionsCallback)]);
+            }
+        }
     }
 }
