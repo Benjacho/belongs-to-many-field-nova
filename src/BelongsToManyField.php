@@ -10,6 +10,13 @@ use Laravel\Nova\Fields\ResourceRelationshipGuesser;
 
 class BelongsToManyField extends Field
 {
+    /**
+     * The callback to be used for the field's options.
+     *
+     * @var array|callable
+     */
+    private $optionsCallback;
+
     public $showOnIndex = true;
     public $showOnDetail = true;
     public $isAction = false;
@@ -35,9 +42,10 @@ class BelongsToManyField extends Field
     /**
      * Create a new field.
      *
-     * @param  string  $name
-     * @param  string|null  $attribute
-     * @param  string|null  $resource
+     * @param string $name
+     * @param string|null $attribute
+     * @param string|null $resource
+     *
      * @return void
      */
     //Code by @drsdre
@@ -77,10 +85,11 @@ class BelongsToManyField extends Field
         return $this->withMeta(['optionsLabel' => $this->label]);
     }
 
-    public function options($options)
+    public function options($options = [])
     {
-        $options = collect($options);
-        return $this->withMeta(['options' => $options]);
+        $this->optionsCallback = $options;
+
+        return $this;
     }
 
     public function relationModel($model)
@@ -146,6 +155,14 @@ class BelongsToManyField extends Field
 
     public function jsonSerialize()
     {
+        if (isset($this->optionsCallback)) {
+            if (is_callable($this->optionsCallback)) {
+                $this->withMeta(['options' => call_user_func($this->optionsCallback)]);
+            } else {
+                $this->withMeta(['options' => collect($this->optionsCallback)]);
+            }
+        }
+
         return array_merge([
             'attribute' => $this->attribute,
             'component' => $this->component(),
