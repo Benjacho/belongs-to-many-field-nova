@@ -22,6 +22,7 @@ class FieldServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             \Route::middleware(['nova'])
+                ->domain(config('nova.domain', null))
                 ->prefix('nova-vendor/belongs-to-many-field')
                 ->group(__DIR__ . '/../routes/api.php');
         });
