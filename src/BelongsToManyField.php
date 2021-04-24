@@ -69,6 +69,7 @@ class BelongsToManyField extends Field
                 unset($request->$attribute);
             }
         });
+        $this->localize();
     }
 
     public function optionsLabel(string $optionsLabel)
@@ -115,6 +116,11 @@ class BelongsToManyField extends Field
     public function setMultiselectProps($props)
     {
         return $this->withMeta(['multiselectOptions' => $props]);
+    }
+
+    public function setMultiselectSlots($slots)
+    {
+        return $this->withMeta(['multiselectSlots' => $slots]);
     }
 
     public function dependsOn($dependsOnField, $tableKey){
@@ -177,5 +183,30 @@ class BelongsToManyField extends Field
         $this->pivotData = $attributes;
 
         return $this;
+    }
+
+    protected function localize(){
+        $this->setMultiselectProps([
+            'selectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_label'),
+            'selectGroupLabel'=>__('belongs-to-many-field-nova::vue-multiselect.select_group_label'),
+            'selectedLabel'=>__('belongs-to-many-field-nova::vue-multiselect.selected_label'),
+            'deselectLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_label'),
+            'deselectGroupLabel'=>__('belongs-to-many-field-nova::vue-multiselect.deselect_group_label'),
+        ]);
+
+        $this->setMultiselectSlots([
+            'noOptions'=>$this->getNoOptionsSlot(),
+            'noResult'=>$this->getNoResultSlot()
+        ]);
+    }
+
+    protected function getNoOptionsSlot()
+    {
+        return __('belongs-to-many-field-nova::vue-multiselect.no_options');
+    }
+
+    protected function getNoResultSlot()
+    {
+        return __('belongs-to-many-field-nova::vue-multiselect.no_result');
     }
 }
