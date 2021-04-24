@@ -9,6 +9,13 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class BelongsToManyField extends Field
 {
+    /**
+     * The callback to be used for the field's options.
+     *
+     * @var array|callable
+     */
+    private $optionsCallback;
+
     public $showOnIndex = true;
     public $showOnDetail = true;
     public $isAction = false;
@@ -83,11 +90,11 @@ class BelongsToManyField extends Field
         return $this->withMeta(['optionsLabel' => $this->label]);
     }
 
-    public function options($options)
+    public function options($options = [])
     {
-        $options = collect($options);
+        $this->optionsCallback = $options;
 
-        return $this->withMeta(['options' => $options]);
+        return $this;
     }
 
     public function relationModel($model)
@@ -168,6 +175,8 @@ class BelongsToManyField extends Field
 
     public function jsonSerialize()
     {
+        $this->resolveOptions();
+
         return array_merge([
             'attribute' => $this->attribute,
             'component' => $this->component(),
@@ -227,5 +236,16 @@ class BelongsToManyField extends Field
     protected function getNoResultSlot()
     {
         return __('belongs-to-many-field-nova::vue-multiselect.no_result');
+    }
+
+    private function resolveOptions(): void
+    {
+        if (isset($this->optionsCallback)) {
+            if (is_callable($this->optionsCallback)) {
+                $this->withMeta(['options' => call_user_func($this->optionsCallback)]);
+            } else {
+                $this->withMeta(['options' => collect($this->optionsCallback)]);
+            }
+        }
     }
 }
