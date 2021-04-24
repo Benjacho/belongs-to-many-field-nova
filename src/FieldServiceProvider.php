@@ -25,6 +25,11 @@ class FieldServiceProvider extends ServiceProvider
                 ->prefix('nova-vendor/belongs-to-many-field')
                 ->group(__DIR__.'/../routes/api.php');
         });
+
+        $this->publishes([
+            __DIR__.'/../resources/lang/' => resource_path('lang/vendor/belongs-to-many-field-nova'),
+        ]);
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang','belongs-to-many-field-nova');
     }
 
     /**
