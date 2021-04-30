@@ -238,15 +238,15 @@ class BelongsToManyField extends Field
         $value = json_decode($resource->{$this->attribute});
 
         // check if is translatable by checking first item
-        // and return translated value if yes
+        // and return value including translated field
         if ($value && $this->value->count()) {
             $optionsLabel = $this->meta['optionsLabel'];
             $translatable = $this->value->first()->translatable;
             if (is_array($translatable) && in_array($optionsLabel, $translatable)) {
                 $newValue = [];
                 foreach ($value as $item) {
+                    $item->{$optionsLabel} = $item->{$optionsLabel}->{app()->getLocale()};
                     $newValue[] = $item;
-                    $newValue[$optionsLabel] = $item->{$optionsLabel}->{app()->getLocale()};
                 }
 
                 return $newValue;
