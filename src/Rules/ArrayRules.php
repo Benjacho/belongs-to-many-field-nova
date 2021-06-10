@@ -3,6 +3,7 @@
 namespace Benjacho\BelongsToManyField\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class ArrayRules implements Rule
 {
@@ -31,7 +32,7 @@ class ArrayRules implements Rule
     {
         $input = [$attribute => json_decode($value, true)];
         $this->rules = [$attribute => $this->rules];
-        $validator = \Validator::make($input, $this->rules, $this->messages($attribute));
+        $validator = Validator::make($input, $this->rules, $this->messages($attribute));
         $this->message = $validator->errors()->get($attribute);
 
         return $validator->passes();

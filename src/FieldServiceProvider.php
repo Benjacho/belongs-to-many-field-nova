@@ -4,6 +4,7 @@ namespace Benjacho\BelongsToManyField;
 
 use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class FieldServiceProvider extends ServiceProvider
@@ -21,7 +22,7 @@ class FieldServiceProvider extends ServiceProvider
         });
 
         $this->app->booted(function () {
-            \Route::middleware(['nova'])
+            Route::middleware(['nova'])
                 ->domain(config('nova.domain', null))
                 ->prefix('nova-vendor/belongs-to-many-field')
                 ->group(__DIR__ . '/../routes/api.php');
