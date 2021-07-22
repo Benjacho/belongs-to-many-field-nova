@@ -7,7 +7,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ResourceController
 {
-    public function index(NovaRequest $request, $parent, $relationship, $optionsLabel, $dependsOnValue = null, $dependsOnKey = null)
+    public function index(NovaRequest $request, $resource, $relationship, $optionsLabel, $dependsOnValue = null, $dependsOnKey = null)
     {
         $resourceClass = $request->newResource();
         $field = $resourceClass
