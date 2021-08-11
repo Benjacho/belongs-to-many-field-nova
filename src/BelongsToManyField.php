@@ -33,6 +33,7 @@ class BelongsToManyField extends Field
     public $component = 'BelongsToManyField';
     public $relationModel;
     public $label = null;
+    public $trackBy = "id";
 
     /**
      * Create a new field.
@@ -88,6 +89,12 @@ class BelongsToManyField extends Field
         $this->label = $optionsLabel;
 
         return $this->withMeta(['optionsLabel' => $this->label]);
+    }
+
+    public function trackBy(string $trackBy)
+    {
+        $this->trackBy = $trackBy;
+        return $this->withMeta(['trackBy' => $this->trackBy]);
     }
 
     public function options($options = [])
@@ -185,6 +192,7 @@ class BelongsToManyField extends Field
             'name' => $this->name,
             'nullable' => $this->nullable,
             'optionsLabel' => $this->label,
+            'trackBy' => $this->trackBy,
             'panel' => $this->panel,
             'prefixComponent' => true,
             'readonly' => $this->isReadonly(app(NovaRequest::class)),
