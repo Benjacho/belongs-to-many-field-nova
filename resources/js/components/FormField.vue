@@ -26,6 +26,7 @@
 <script>
 import {FormField, HandlesValidationErrors} from "laravel-nova";
 import MultiSelect from "vue-multiselect";
+import get from 'lodash.get'
 
 export default {
     mixins: [FormField, HandlesValidationErrors],
@@ -149,8 +150,10 @@ export default {
             this.optionsLabel = this.field.optionsLabel
                 ? this.field.optionsLabel
                 : "name";
-            this.value = this.field.value || "";
-            this.fetchOptions();
+            this.value = this.field.value.map(el => ({
+                ...el,
+                [this.optionsLabel]: get(el, this.optionsLabel)
+            }));
         },
 
         fetchOptions() {
