@@ -40,6 +40,7 @@ export default {
         return {
             options: [],
             optionsLabel: "name",
+            trackBy: "id",
             dependsOnValue: null,
             isDependant: false,
             shouldClear: false,
@@ -64,8 +65,8 @@ export default {
         multiSelectProps() {
             return {
                 multiple: true,
-                label: this.optionsLabel,
-                trackBy: this.optionsLabel,
+                customLabel: (el) => get(el, this.optionsLabel),
+                trackBy: this.trackBy,
                 preselectFirst: false,
                 class: this.errorClasses,
                 placeholder: this.field.name,
@@ -150,10 +151,14 @@ export default {
             this.optionsLabel = this.field.optionsLabel
                 ? this.field.optionsLabel
                 : "name";
+            this.trackBy = this.field.trackBy
+                ? this.field.trackBy
+                : "id";
             this.value = this.field.value.map(el => ({
                 ...el,
                 [this.optionsLabel]: get(el, this.optionsLabel)
             }));
+            this.fetchOptions();
         },
 
         fetchOptions() {
