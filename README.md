@@ -35,14 +35,14 @@ public function fields(Request $request){
 
 ### Functions
 
-| Function                      | Param          | default    | description                                                                                                                                                                  |
-| ----------------------------- | --------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `optionsLabel`                | String          | 'name'     | If you don't have column 'name' in your relationship table, use this method. This displays in index and detail Ejm (`optionsLabel('full_role_name')`).                                                                                                                  |
-| `isAction`                    | Boolean         | true       | This method is when you need this field in actions, this puts height of field in 350px, and converts in action.                                                                                                                                        |
-| `setMultiselectProps`         | Array           | []         | this method allows you to set properties for the [vue multiselect component](https://vue-multiselect.js.org/#sub-props)                                                                                                                            |
-| `dependsOn`                   | String, String  | null, null | This method allows you to depend on belongsto field, this make an auto query                                                                                                 |
-| `canSelectAll`                | String, Boolean | 'Select All', true | This method allows you to have a select all checkbox and display custom message                                                                                              |
-| `showAsListInDetail`          | Boolean         | true       | This method allows you to display as list in detail                                                                                             |
+| Function              | Param           | default            | description                                                                                                                                                                                                                                           |
+| --------------------- | --------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `optionsLabel`        | String          | 'name'             | If you don't have column 'name' in your relationship table, use this method. This displays in index and detail Ejm (`optionsLabel('full_role_name')`) you can also access nested object keys with dot notation like this (`optionsLabel('name.en')`). Note that this field uses the relation resource title property, so if you want translated versions on your form change app.timezone
+| `isAction`            | Boolean         | true               | This method is when you need this field in actions, this puts height of field in 350px, and converts in action.                                                                                                                                       |
+| `setMultiselectProps` | Array           | []                 | this method allows you to set properties for the [vue multiselect component](https://vue-multiselect.js.org/#sub-props)                                                                                                                               |
+| `dependsOn`           | String, String  | null, null         | This method allows you to depend on belongsto field, this make an auto query                                                                                                                                                                          |
+| `canSelectAll`        | String, Boolean | 'Select All', true | This method allows you to have a select all checkbox and display custom message                                                                                                                                                                       |
+| `showAsListInDetail`  | Boolean         | true               | This method allows you to display as list in detail                                                                                                                                                                                                   |
 
 - Method optionsLabel('columnName'), this method is when you don't have column 'name' in your table and you want to
   label by another column name. By default it tracks by label 'name'.
@@ -68,14 +68,14 @@ public function handle(ActionFields $fields, Collection $models)
 {
     //note that roles is the many to many relationship function name
     $values = array_column(json_decode(request()->roles, true),'id');
-    
+
     foreach ($models as $model) {
         $model->roles()->sync($values);
     }
 }
 ```
 
-- Method setMultiselectProps($props), this method allows you to set properties for
+- Method setMultiselectProps(\$props), this method allows you to set properties for
   the [vue multiselect component](https://vue-multiselect.js.org/#sub-props)
 
 ```php
@@ -97,7 +97,7 @@ public function handle(ActionFields $fields, Collection $models)
      ->dependsOn('association', 'association_id'),
 ```
 
-- Method canSelectAll($messageSelectAll), This method allows you to display select all checkbox, if you dont pass
+- Method canSelectAll(\$messageSelectAll), This method allows you to display select all checkbox, if you dont pass
   message default is displayed
 
 ```php
@@ -115,7 +115,7 @@ public function handle(ActionFields $fields, Collection $models)
 ### Validations
 
 This package implement all Laravel Validations, you need to pass the rules in rules method, rules are listed on laravel
-validations rules for arrays*.
+validations rules for arrays\*.
 
 ```php
 use Benjacho\BelongsToManyField\BelongsToManyField;
@@ -135,7 +135,7 @@ public function fields(Request $request){
 To publish translations:
 
 ```
-php artisan vendor:publish --provider="Benjacho\BelongsToManyField\FieldServiceProvider" 
+php artisan vendor:publish --provider="Benjacho\BelongsToManyField\FieldServiceProvider"
 ```
 
 This package come with the following translation for the vue-multiselect plugin.
