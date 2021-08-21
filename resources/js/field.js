@@ -1,5 +1,9 @@
+import IndexField from "./components/IndexField";
+import DetailField from "./components/DetailField";
+import FormField from "./components/FormField";
+
 Nova.booting((Vue, router, store) => {
-  Vue.component('index-BelongsToManyField', require('./components/IndexField'))
-  Vue.component('detail-BelongsToManyField', require('./components/DetailField'))
-  Vue.component('form-BelongsToManyField', require('./components/FormField'))
-})
+  Vue.component("index-BelongsToManyField", IndexField);
+  Vue.component("detail-BelongsToManyField", DetailField);
+  Vue.component("form-BelongsToManyField", FormField);
+});

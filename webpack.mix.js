@@ -1,5 +1,7 @@
-let mix = require('laravel-mix')
+let mix = require("laravel-mix");
 
-mix.setPublicPath('dist')
-   .js('resources/js/field.js', 'js')
-   .sass('resources/sass/field.scss', 'css')
+mix
+  .setPublicPath("dist")
+  .js("resources/js/field.js", "js")
+  .vue()
+  .sass("resources/sass/field.scss", "css");

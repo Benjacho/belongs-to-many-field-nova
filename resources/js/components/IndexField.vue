@@ -11,28 +11,30 @@
         }"
         class="no-underline dim text-primary font-bold"
         v-if="field.viewable"
-      >{{get(resource, field.optionsLabel)}}</router-link>
-      <span v-else>{{get(resource, field.optionsLabel)}}</span>
+        >{{ get(resource, field.optionsLabel) }}</router-link
+      >
+      <span v-else>{{ get(resource, field.optionsLabel) }}</span>
     </span>
   </div>
 </template>
 
 <script>
-import get from 'lodash.get'
+import get from "lodash.get";
 export default {
+  name: "IndexField",
   props: ["resourceName", "field"],
   methods: {
     get(object, path, defaultValue) {
       return get(object, path, defaultValue);
-    }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-  .single:not(:last-of-type) {
-    &:after {
-      content: ', ';
-    }
+.single:not(:last-of-type) {
+  &:after {
+    content: ", ";
   }
+}
 </style>
