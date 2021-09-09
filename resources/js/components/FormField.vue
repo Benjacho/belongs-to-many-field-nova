@@ -27,6 +27,8 @@
           :options="options"
           v-bind="multiSelectProps"
           v-model="value"
+          @[searchChange]="searchableFetchOptions"
+          :loading="loading"
         >
           <template slot="noOptions">{{
             field.multiselectSlots.noOptions
@@ -63,6 +65,7 @@ export default {
       shouldClear: false,
       loading: true,
       selectAll: false,
+      debounceTimer: null,
     };
   },
   mounted() {
@@ -87,9 +90,35 @@ export default {
         preselectFirst: false,
         class: this.errorClasses,
         placeholder: this.field.name,
+        internalSearch: ! this.field.searchable,
+        preserveSearch: this.field.searchable,
+        clearOnSelect: ! this.field.searchable,
         ...(this.field.multiselectOptions ? this.field.multiselectOptions : {}),
       };
     },
+
+    /**
+     * Determine if the related resources is searchable
+     */
+    isSearchable() {
+      return this.field.searchable;
+    },
+
+    searchChange: function() {
+      return this.field.searchable ? "search-change" : null;
+    },
+
+    /**
+     * Get the query params for getting available resources
+     */
+    queryParams() {
+      return {
+        params: {
+          resourceId: this.resourceId,
+        },
+      }
+    },
+
   },
   watch: {
     selectAll(value) {
@@ -180,18 +209,30 @@ export default {
       this.fetchOptions();
     },
 
-    fetchOptions() {
+    fetchOptions(query="") {
       if (this.field.options) {
         this.options = this.field.options;
         this.loading = false;
         return;
       }
 
+      if (this.isSearchable && ! query) {
+        //inital empty options and keep previously loaded options
+        this.loading = false;
+        return;
+      }
+
+      let qParams={ ...this.queryParams };
+
+      if (query) {
+        qParams.params.search=query;
+      }
+
       let baseUrl = "/nova-vendor/belongs-to-many-field/";
       if (this.isDependant) {
         if (this.dependsOnValue) {
           this.loading = true;
-          Nova.request(
+          Nova.request().get(
             baseUrl +
               this.resourceName +
               "/" +
@@ -202,7 +243,8 @@ export default {
               "/" +
               this.dependsOnValue +
               "/" +
-              this.field.dependsOnKey
+              this.field.dependsOnKey,
+            qParams
           ).then((data) => {
             this.options = data.data;
             this.loading = false;
@@ -212,19 +254,28 @@ export default {
           this.loading = false;
         }
       } else {
-        Nova.request(
+        Nova.request().get(
           baseUrl +
             this.resourceName +
             "/" +
             "options/" +
             this.field.attribute +
             "/" +
-            this.optionsLabel
+            this.optionsLabel,
+          qParams
         ).then((data) => {
           this.options = data.data;
           this.loading = false;
         });
       }
+    },
+
+    searchableFetchOptions (query) {
+      this.loading = true;
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.fetchOptions(query);
+      }, this.field.debounce);
     },
 
     /**

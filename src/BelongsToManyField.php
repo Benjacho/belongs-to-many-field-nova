@@ -6,9 +6,11 @@ use Benjacho\BelongsToManyField\Rules\ArrayRules;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ResourceRelationshipGuesser;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\Searchable;
 
 class BelongsToManyField extends Field
 {
+    use Searchable;
     /**
      * The callback to be used for the field's options.
      *
@@ -32,7 +34,7 @@ class BelongsToManyField extends Field
      */
     public $component = 'BelongsToManyField';
     public $relationModel;
-    public $label = null;
+    public $label = "name";
     public $trackBy = "id";
 
     /**
@@ -50,11 +52,6 @@ class BelongsToManyField extends Field
         $resource = $resource ?? ResourceRelationshipGuesser::guessResource($name);
 
         $this->resource = $resource;
-
-        if ($this->label === null) {
-            $this->optionsLabel(($resource)::$title ?? 'name');
-        }
-
         $this->resourceClass = $resource;
         $this->resourceName = $resource::uriKey();
         $this->manyToManyRelationship = $this->attribute;
@@ -172,7 +169,19 @@ class BelongsToManyField extends Field
             parent::resolve($resource, $attribute);
         } else {
             parent::resolve($resource, $attribute);
-            $value = json_decode($resource->{$this->attribute});
+            $optionsLabel=$this->label;
+            $value = json_decode($resource->{$this->attribute}
+                       ->mapInto($this->resourceClass)
+                       ->map(function ($resource) use ($optionsLabel) {
+                         return [
+                           'id' => $resource->id,
+                           $optionsLabel => $resource->title(),
+                           'value' => $resource->getKey(),
+                         ];
+                       })
+                       ->sortBy($optionsLabel)
+                       ->values()
+            );
 
             if ($value) {
                 $this->value = $value;
@@ -187,6 +196,7 @@ class BelongsToManyField extends Field
         return array_merge([
             'attribute' => $this->attribute,
             'component' => $this->component(),
+            'debounce' => $this->debounce,
             'helpText' => $this->getHelpText(),
             'indexName' => $this->name,
             'name' => $this->name,
@@ -198,6 +208,7 @@ class BelongsToManyField extends Field
             'readonly' => $this->isReadonly(app(NovaRequest::class)),
             'required' => $this->isRequired(app(NovaRequest::class)),
             'resourceNameRelationship' => $this->resourceName,
+            'searchable' => $this->searchable,
             'sortable' => $this->sortable,
             'sortableUriKey' => $this->sortableUriKey(),
             'stacked' => $this->stacked,
