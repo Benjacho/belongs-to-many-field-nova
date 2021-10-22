@@ -1,17 +1,41 @@
 <template>
-  <default-field :field="field" :errors="errors" :show-help-text="showHelpText">
+  <default-field :field="field" :errors="errors" :show-help-text="true">
     <template slot="field">
       <div class="flex items-center">
-        <div :style="{height: field.height ? field.height : 'auto'}" class="relative w-full">
-          <div v-if="loading" class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white">
-            <loader class="text-60"/>
+        <div
+          :style="{ height: field.height ? field.height : 'auto' }"
+          class="relative w-full"
+        >
+          <div
+            v-if="loading"
+            class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white"
+          >
+            <loader class="text-60" />
           </div>
           <div v-if="this.field.selectAll" class="mb-2">
-            <input type="checkbox" id="checkbox" class="checkbox" v-model="selectAll">
-            <label for="checkbox">{{this.field.messageSelectAll}}</label>
+            <input
+              type="checkbox"
+              id="checkbox"
+              class="checkbox"
+              v-model="selectAll"
+            />
+            <label for="checkbox">{{ this.field.messageSelectAll }}</label>
           </div>
-          <multi-select ref="multiselect" @open="() => repositionDropdown(true)" :options="options"
-                        v-bind="multiSelectProps" v-model="value"/>
+          <!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
+          <multi-select
+            ref="multiselect"
+            @open="() => repositionDropdown(true)"
+            :options="options"
+            v-bind="multiSelectProps"
+            v-model="value"
+          >
+            <template slot="noOptions">{{
+              field.multiselectSlots.noOptions
+            }}</template>
+            <template slot="noResult">{{
+              field.multiselectSlots.noResult
+            }}</template>
+          </multi-select>
         </div>
 
         <create-relation-button
@@ -36,156 +60,166 @@
 </template>
 
 <script>
-  import {FormField, HandlesValidationErrors} from "laravel-nova";
-  import MultiSelect from "vue-multiselect";
+import { FormField, HandlesValidationErrors } from "laravel-nova";
+import MultiSelect from "vue-multiselect";
+import get from "lodash.get";
 
-  export default {
-    mixins: [FormField, HandlesValidationErrors],
+export default {
+  mixins: [FormField, HandlesValidationErrors],
 
-    props: ["resourceName", "resourceId", "field"],
+  props: ["resourceName", "resourceId", "field"],
 
-    components: {
-      MultiSelect
-    },
-    data() {
+  components: {
+    MultiSelect,
+  },
+  data() {
+    return {
+      options: [],
+      optionsLabel: "name",
+      trackBy: "id",
+      dependsOnValue: null,
+      isDependant: false,
+      shouldClear: false,
+      loading: true,
+      selectAll: false,
+      relationModalOpen: false,
+    };
+  },
+  mounted() {
+    window.addEventListener("scroll", this.repositionDropdown);
+  },
+  destroyed() {
+    window.removeEventListener("scroll", this.repositionDropdown);
+  },
+  created() {
+    if (this.field.dependsOn !== undefined) {
+      this.isDependant = true;
+      this.registerDependencyWatchers(this.$root);
+    }
+  },
+
+  computed: {
+    multiSelectProps() {
       return {
-        options: [],
-        optionsLabel: "name",
-        dependsOnValue: null,
-        isDependant: false,
-        shouldClear: false,
-        loading: true,
-        selectAll:false,
-        relationModalOpen: false,
+        multiple: true,
+        customLabel: (el) => get(el, this.optionsLabel),
+        trackBy: this.trackBy,
+        preselectFirst: false,
+        class: this.errorClasses,
+        placeholder: this.field.name,
+        ...(this.field.multiselectOptions ? this.field.multiselectOptions : {}),
       };
     },
-    mounted() {
-      window.addEventListener('scroll', this.repositionDropdown);
-    },
-    destroyed() {
-      window.removeEventListener('scroll', this.repositionDropdown);
-    },
-    created() {
-      if (this.field.dependsOn !== undefined) {
-        this.isDependant = true;
-        this.registerDependencyWatchers(this.$root)
+  },
+  watch: {
+    selectAll(value) {
+      if (value) {
+        this.value = [...this.options];
+      } else {
+        this.value = [];
       }
     },
-
-    computed: {
-      multiSelectProps() {
-        return {
-          multiple: true,
-          label: this.optionsLabel,
-          trackBy: this.optionsLabel,
-          preselectFirst: false,
-          class: this.errorClasses,
-          placeholder: this.field.name,
-          ...(this.field.multiselectOptions ? this.field.multiselectOptions : {})
-        };
-      }
-    },
-    watch: {
-      selectAll(value){
-        if(value){
-          this.value = [...this.options];
+  },
+  methods: {
+    repositionDropdown(onOpen = false) {
+      const ms = this.$refs.multiselect;
+      if (!ms) return;
+      const el = ms.$el;
+      const handlePositioning = () => {
+        const { top, height, bottom } = el.getBoundingClientRect();
+        if (onOpen) ms.$refs.list.scrollTop = 0;
+        const fromBottom =
+          (window.innerHeight || document.documentElement.clientHeight) -
+          bottom;
+        ms.$refs.list.style.position = "fixed";
+        ms.$refs.list.style.width = `${el.clientWidth}px`;
+        if (fromBottom < 300) {
+          ms.$refs.list.style.top = "auto";
+          ms.$refs.list.style.bottom = `${fromBottom + height}px`;
+          ms.$refs.list.style["border-radius"] = "5px 5px 0 0";
         } else {
-          this.value = [];
+          ms.$refs.list.style.bottom = "auto";
+          ms.$refs.list.style.top = `${top + height}px`;
+          ms.$refs.list.style["border-radius"] = "0 0 5px 5px";
         }
-      }
+      };
+      if (onOpen) this.$nextTick(handlePositioning);
+      else handlePositioning();
     },
-    methods: {
-      repositionDropdown(onOpen = false) {
-        const ms = this.$refs.multiselect;
-        if (!ms) return;
-        const el = ms.$el;
-        const handlePositioning = () => {
-          const {top, height, bottom} = el.getBoundingClientRect();
-          if (onOpen) ms.$refs.list.scrollTop = 0;
-          const fromBottom = (window.innerHeight || document.documentElement.clientHeight) - bottom;
-          ms.$refs.list.style.position = 'fixed';
-          ms.$refs.list.style.width = `${el.clientWidth}px`;
-          if (fromBottom < 300) {
-            ms.$refs.list.style.top = 'auto';
-            ms.$refs.list.style.bottom = `${fromBottom + height}px`;
-            ms.$refs.list.style['border-radius'] = '5px 5px 0 0';
-          } else {
-            ms.$refs.list.style.bottom = 'auto';
-            ms.$refs.list.style.top = `${top + height}px`;
-            ms.$refs.list.style['border-radius'] = '0 0 5px 5px';
+
+    registerDependencyWatchers(root) {
+      root.$children.forEach((component) => {
+        if (this.componentIsDependency(component)) {
+          if (component.selectedResourceId !== undefined) {
+            let attribute = this.findWatchableComponentAttribute(component);
+            component.$watch(attribute, this.dependencyWatcher, {
+              immediate: true,
+            });
+            this.dependencyWatcher(component.selectedResourceId);
           }
-        };
-        if (onOpen) this.$nextTick(handlePositioning);
-        else handlePositioning();
-      },
-
-      registerDependencyWatchers(root) {
-        root.$children.forEach(component => {
-          if (this.componentIsDependency(component)) {
-            if (component.selectedResourceId !== undefined) {
-              let attribute = this.findWatchableComponentAttribute(component);
-              component.$watch(attribute, this.dependencyWatcher, {immediate: true});
-              this.dependencyWatcher(component.selectedResourceId)
-            }
-          }
-          this.registerDependencyWatchers(component)
-        })
-      },
-
-      findWatchableComponentAttribute(component) {
-        let attribute;
-        if (component.field.component === 'belongs-to-field') {
-          attribute = 'selectedResource';
-        } else {
-          attribute = 'value';
         }
-        return attribute;
-      },
+        this.registerDependencyWatchers(component);
+      });
+    },
 
-      componentIsDependency(component) {
-        if (component.field === undefined) {
-          return false
-        }
-        return component.field.attribute === this.field.dependsOn
-      },
+    findWatchableComponentAttribute(component) {
+      let attribute;
+      if (component.field.component === "belongs-to-field") {
+        attribute = "selectedResource";
+      } else {
+        attribute = "value";
+      }
+      return attribute;
+    },
 
-      dependencyWatcher(value) {
-        if (value === this.dependsOnValue) {
-          return
-        }
-        this.dependsOnValue = value.value;
-        this.fetchOptions()
-      },
+    componentIsDependency(component) {
+      if (component.field === undefined) {
+        return false;
+      }
+      return component.field.attribute === this.field.dependsOn;
+    },
 
-      /*
-       * Set the initial, internal value for the field.
-       */
-      setInitialValue() {
-        this.optionsLabel = this.field.optionsLabel
-          ? this.field.optionsLabel
-          : "name";
-        this.value = this.field.value || "";
-        this.fetchOptions();
-      },
+    dependencyWatcher(value) {
+      if (value === this.dependsOnValue) {
+        return;
+      }
+      this.dependsOnValue = value.value;
+      this.fetchOptions();
+    },
 
-      fetchOptions() {
-        if (this.field.options) {
-          this.options = this.field.options;
-          this.loading = false;
-          return;
-        }
+    /*
+     * Set the initial, internal value for the field.
+     */
+    setInitialValue() {
+      this.optionsLabel = this.field.optionsLabel
+        ? this.field.optionsLabel
+        : "name";
+      this.trackBy = this.field.trackBy ? this.field.trackBy : "id";
+      this.value = this.field.value.map((el) => ({
+        ...el,
+        [this.optionsLabel]: get(el, this.optionsLabel),
+      }));
+      this.fetchOptions();
+    },
 
-        this.fetchOptionsFromServer()
-      },
+    fetchOptions() {
+      if (this.field.options) {
+        this.options = this.field.options;
+        this.loading = false;
+        return;
+      }
 
-      fetchOptionsFromServer() {
-        return new Promise((resolve, reject) => {
-          let baseUrl = "/nova-vendor/belongs-to-many-field/";
-          if (this.isDependant) {
-            if (this.dependsOnValue) {
-              this.loading = true;
-              Nova.request(
-                baseUrl +
+      this.fetchOptionsFromServer();
+    },
+
+    fetchOptionsFromServer() {
+      return new Promise((resolve, reject) => {
+        let baseUrl = "/nova-vendor/belongs-to-many-field/";
+        if (this.isDependant) {
+          if (this.dependsOnValue) {
+            this.loading = true;
+            Nova.request(
+              baseUrl +
                 this.resourceName +
                 "/" +
                 "options/" +
@@ -196,128 +230,127 @@
                 this.dependsOnValue +
                 "/" +
                 this.field.dependsOnKey
-              ).then(data => {
-                this.options = data.data;
-                this.loading = false;
-              }).finally(() => resolve());
-            } else {
-              this.options = [];
+            ).then((data) => {
+              this.options = data.data;
               this.loading = false;
-            }
+            }).finally(() => resolve());
           } else {
-            Nova.request(
-              baseUrl +
+            this.options = [];
+            this.loading = false;
+          }
+        } else {
+          Nova.request(
+            baseUrl +
               this.resourceName +
               "/" +
               "options/" +
               this.field.attribute +
               "/" +
               this.optionsLabel
-            ).then(data => {
-              this.options = data.data;
-              this.loading = false;
-            }).finally(() => resolve());
-          }
-        })
-      },
+          ).then((data) => {
+            this.options = data.data;
+            this.loading = false;
+          }).finally(() => resolve());
+        }
+      });
+    },
 
-      /**
-       * Fill the given FormData object with the field's internal value.
-       */
-      fill(formData) {
-        formData.append(this.field.attribute, JSON.stringify(this.value) || "");
-      },
+    /**
+     * Fill the given FormData object with the field's internal value.
+     */
+    fill(formData) {
+      formData.append(this.field.attribute, JSON.stringify(this.value) || "");
+    },
 
-      /**
-       * Update the field's internal value.
-       */
-      handleChange(value) {
-        this.value = value;
-        this.$nextTick(() => this.repositionDropdown());
-      },
+    /**
+     * Update the field's internal value.
+     */
+    handleChange(value) {
+      this.value = value;
+      this.$nextTick(() => this.repositionDropdown());
+    },
 
-      /**
-       * Open the create relation modal.
-       */
-      openRelationModal() {
-        this.relationModalOpen = true
-      },
+    /**
+     * Open the create relation modal.
+     */
+    openRelationModal() {
+      this.relationModalOpen = true
+    },
 
-      /**
-       * Close the create relation modal.
-       */
-      closeRelationModal() {
-        this.relationModalOpen = false
-      },
+    /**
+     * Close the create relation modal.
+     */
+    closeRelationModal() {
+      this.relationModalOpen = false
+    },
 
-      // Check if the user is authorized to create the resource.
-      authorizedToCreate() {
-        return _.find(Nova.config.resources, resource => {
-          return resource.uriKey == this.field.resourceNameRelationship
-        }).authorizedToCreate
-      },
+    // Check if the user is authorized to create the resource.
+    authorizedToCreate() {
+      return _.find(Nova.config.resources, resource => {
+        return resource.uriKey == this.field.resourceNameRelationship
+      }).authorizedToCreate
+    },
 
-      /**
-       * Handle the create relation modal.
-       */
-      handleSetResource({ id }) {
-        this.closeRelationModal()
-        this.fetchOptionsFromServer().then(() => {
-          const valueToAdd = this.options.find((option) => option.id === id)
-          if (valueToAdd) {
-            this.value.push(valueToAdd)
-          }
-        })
-      },
+    /**
+     * Handle the create relation modal.
+     */
+    handleSetResource({ id }) {
+      this.closeRelationModal()
+      this.fetchOptionsFromServer().then(() => {
+        const valueToAdd = this.options.find((option) => option.id === id)
+        if (valueToAdd) {
+          this.value.push(valueToAdd)
+        }
+      })
+    },
 
-      /**
-       * Check if the create relation modal should can be shown.
-       */
-      canShowNewRelationModal() {
-        return (
-          this.field.showCreateRelationButton &&
-          !this.shownViaNewRelationModal &&
-          !this.isLocked &&
-          !this.isReadonly &&
-          this.authorizedToCreate
-        )
-      },
-    }
-  };
+    /**
+     * Check if the create relation modal should can be shown.
+     */
+    canShowNewRelationModal() {
+      return (
+        this.field.showCreateRelationButton &&
+        !this.shownViaNewRelationModal &&
+        !this.isLocked &&
+        !this.isReadonly &&
+        this.authorizedToCreate
+      )
+    },
+  }
+};
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style type="text/css">
-  .multiselect__placeholder {
-    font-size: 1rem;
-    color: var(--70) !important;
-    margin-left: 4px
-  }
+.multiselect__placeholder {
+  font-size: 1rem;
+  color: var(--70) !important;
+  margin-left: 4px;
+}
 
-  .multiselect__tags {
-    border-width: 1px;
-    border-color: var(--60);
-  }
+.multiselect__tags {
+  border-width: 1px;
+  border-color: var(--60);
+}
 
-  .multiselect__select {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 35px;
-  }
+.multiselect__select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+}
 
-  .multiselect__select::before {
-    border-width: 0; /* Reset default style */
+.multiselect__select::before {
+  border-width: 0; /* Reset default style */
 
-    /*position: absolute;*/
-    top: 0;
-    width: 22px;
-    height: 6px;
-    margin: 0;
+  /*position: absolute;*/
+  top: 0;
+  width: 22px;
+  height: 6px;
+  margin: 0;
 
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6"><path fill="%2335393C" fill-rule="nonzero" d="M8.293.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4A1 1 0 0 1 1.707.293L5 3.586 8.293.293z"/></svg>');
-  }
-
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6"><path fill="%2335393C" fill-rule="nonzero" d="M8.293.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4A1 1 0 0 1 1.707.293L5 3.586 8.293.293z"/></svg>');
+}
 </style>
