@@ -3,6 +3,7 @@
 namespace Benjacho\BelongsToManyField;
 
 use Benjacho\BelongsToManyField\Rules\ArrayRules;
+use Illuminate\Support\Str;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ResourceRelationshipGuesser;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -25,6 +26,7 @@ class BelongsToManyField extends Field
     public $viewable = true;
     public $showAsList = false;
     public $pivotData = [];
+    private $customRelatableMethod = null;
     /**
      * The field's component.
      *
@@ -107,6 +109,13 @@ class BelongsToManyField extends Field
     public function relationModel($model)
     {
         $this->relationModel = $model;
+
+        return $this;
+    }
+
+    public function customRelatableMethod($methodName)
+    {
+        $this->customRelatableMethod = $methodName;
 
         return $this;
     }
@@ -255,5 +264,48 @@ class BelongsToManyField extends Field
                 $this->withMeta(['options' => collect($this->optionsCallback)]);
             }
         }
+    }
+
+    public function buildAttachableQuery(NovaRequest $request, $query)
+    {
+        $model = forward_static_call([$this->resourceClass, 'newModel']);
+
+        return $query->tap(function ($query) use ($request, $model) {
+            forward_static_call($this->attachableQueryCallable($request, $model), $request, $query);
+        });
+    }
+
+    /**
+     * Get the attachable query method name.
+     *
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return array
+     */
+    protected function attachableQueryCallable(NovaRequest $request, $model)
+    {
+        return ($method = $this->attachableQueryMethod($request, $model))
+            ? [$request->resource(), $method]
+            : [$this->resourceClass, 'relatableQuery'];
+    }
+
+    /**
+     * Get the attachable query method name.
+     *
+     * @param \Laravel\Nova\Http\Requests\NovaRequest $request
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return string
+     */
+    protected function attachableQueryMethod(NovaRequest $request, $model)
+    {
+        $method = $this->customRelatableMethod == null
+            ? 'relatable' . Str::plural(class_basename($model))
+            : $this->customRelatableMethod;
+
+        if (method_exists($request->resource(), $method)) {
+            return $method;
+        }
+
+        return null;
     }
 }

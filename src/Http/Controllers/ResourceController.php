@@ -2,7 +2,6 @@
 
 namespace Benjacho\BelongsToManyField\Http\Controllers;
 
-use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ResourceController
@@ -17,7 +16,7 @@ class ResourceController
             ->first();
         $query = $field->resourceClass::newModel();
 
-        $queryResult = $field->resourceClass::relatableQuery($request, $query);
+        $queryResult = $field->buildAttachableQuery($request, $query);
 
         if ($dependsOnValue) {
             $queryResult = $queryResult->where($dependsOnKey, $dependsOnValue);
