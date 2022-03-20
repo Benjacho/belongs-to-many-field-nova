@@ -112,16 +112,17 @@ export default {
           (window.innerHeight || document.documentElement.clientHeight) -
           bottom;
         ms.$refs.list.style.position = "fixed";
-        ms.$refs.list.style.width = `${el.clientWidth}px`;
-        if (fromBottom < 300) {
-          ms.$refs.list.style.top = "auto";
-          ms.$refs.list.style.bottom = `${fromBottom + height}px`;
-          ms.$refs.list.style["border-radius"] = "5px 5px 0 0";
-        } else {
-          ms.$refs.list.style.bottom = "auto";
-          ms.$refs.list.style.top = `${top + height}px`;
-          ms.$refs.list.style["border-radius"] = "0 0 5px 5px";
-        }
+        //Bottom space bug:
+        // ms.$refs.list.style.width = `${el.clientWidth}px`;
+        // if (fromBottom < 300) {
+        //   ms.$refs.list.style.top = "auto";
+        //   ms.$refs.list.style.bottom = `${fromBottom + height}px`;
+        //   ms.$refs.list.style["border-radius"] = "5px 5px 0 0";
+        // } else {
+        //   ms.$refs.list.style.bottom = "auto";
+        //   ms.$refs.list.style.top = `${top + height}px`;
+        //   ms.$refs.list.style["border-radius"] = "0 0 5px 5px";
+        // }
       };
       if (onOpen) this.$nextTick(handlePositioning);
       else handlePositioning();
