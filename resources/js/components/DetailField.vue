@@ -10,7 +10,7 @@
               <Link
                   @click.stop
                   :href="$url(`/resources/${field.resourceNameRelationship}/${resource.id}`)"
-                  class="no-underline dim text-primary font-bold"
+                  class="link-default"
                   v-if="field.viewable"
               >
                 {{ get(resource, field.optionsLabel) }}
@@ -25,7 +25,7 @@
         <Link
             @click.stop
             :href="$url(`/resources/${field.resourceNameRelationship}/${resource.id}`)"
-            class="no-underline dim text-primary font-bold"
+            class="link-default"
             v-if="field.viewable"
         >
           {{ get(resource, field.optionsLabel) }}

@@ -5,7 +5,7 @@
           <Link
               @click.stop
               :href="$url(`/resources/${field.resourceNameRelationship}/${resource.id}`)"
-              class="no-underline dim text-primary font-bold"
+              class="link-default"
           >
             {{ get(resource, field.optionsLabel) }}
           </Link>
