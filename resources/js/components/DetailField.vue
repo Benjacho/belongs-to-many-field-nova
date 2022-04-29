@@ -7,18 +7,14 @@
             <div class="border-b border-50 cursor-text font-mono text-sm py-2 px-4"
                  v-for="(resource, key) in field.value"
                  :key="key">
-              <router-link
-                :to="{
-                name: 'detail',
-                params: {
-                  resourceName: field.resourceNameRelationship,
-                  resourceId: resource.id,
-                },
-              }"
-                class="no-underline dim text-primary font-bold"
-                v-if="field.viewable"
-              >{{get(resource, field.optionsLabel)}}
-              </router-link>
+              <Link
+                  @click.stop
+                  :href="$url(`/resources/${field.resourceNameRelationship}/${resource.id}`)"
+                  class="no-underline dim text-primary font-bold"
+                  v-if="field.viewable"
+              >
+                {{ get(resource, field.optionsLabel) }}
+              </Link>
               <span v-else>{{get(resource, field.optionsLabel)}}</span>
             </div>
           </div>
@@ -26,17 +22,14 @@
       </div>
       <div v-else>
       <span v-for="(resource, key) in field.value" class="single">
-        <router-link
-          :to="{
-            name: 'detail',
-            params: {
-              resourceName: field.resourceNameRelationship,
-              resourceId: resource.id,
-            },
-          }"
-          class="no-underline dim text-primary font-bold"
-          v-if="field.viewable"
-        >{{get(resource, field.optionsLabel)}}</router-link>
+        <Link
+            @click.stop
+            :href="$url(`/resources/${field.resourceNameRelationship}/${resource.id}`)"
+            class="no-underline dim text-primary font-bold"
+            v-if="field.viewable"
+        >
+          {{ get(resource, field.optionsLabel) }}
+        </Link>
         <span v-else>{{get(resource, field.optionsLabel)}}</span>
       </span>
       </div>
@@ -55,6 +48,7 @@
       }
     },
     mounted() {
+      console.log('!!!!_BELONGS_FIELD', this.field)
       if (this.field.showAsList) {
         console.log(this.field)
       }
