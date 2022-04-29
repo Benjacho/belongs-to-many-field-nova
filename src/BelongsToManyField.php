@@ -180,7 +180,7 @@ class BelongsToManyField extends Field
         }
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $this->resolveOptions();
 

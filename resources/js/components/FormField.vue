@@ -1,6 +1,6 @@
 <template>
-  <default-field :field="field" :errors="errors" :show-help-text="true">
-    <template slot="field">
+  <DefaultField :field="field" :errors="errors" :show-help-text="true">
+    <template #field>
       <div
         :style="{ height: field.height ? field.height : 'auto' }"
         class="relative"
@@ -9,7 +9,7 @@
           v-if="loading"
           class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white"
         >
-          <loader class="text-60" />
+          <Loader class="text-60" />
         </div>
         <div v-if="this.field.selectAll" class="mb-2">
           <input
@@ -28,16 +28,16 @@
           v-bind="multiSelectProps"
           v-model="value"
         >
-          <template slot="noOptions">{{
+          <template #noOptions>{{
             field.multiselectSlots.noOptions
           }}</template>
-          <template slot="noResult">{{
+          <template #noResult>{{
             field.multiselectSlots.noResult
           }}</template>
         </multi-select>
       </div>
     </template>
-  </default-field>
+  </DefaultField>
 </template>
 
 <script>

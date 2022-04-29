@@ -1,6 +1,6 @@
 <template>
-  <panel-item :field="field">
-    <div slot="value">
+  <PanelItem :field="field">
+    <template #value>
       <div v-if="field.showAsList">
         <div class="relative rounded-lg bg-white shadow border border-60">
           <div class="overflow-hidden rounded-b-lg rounded-t-lg">
@@ -40,15 +40,15 @@
         <span v-else>{{get(resource, field.optionsLabel)}}</span>
       </span>
       </div>
-    </div>
-  </panel-item>
+    </template>
+  </PanelItem>
 </template>
 
 <script>
   import get from 'lodash.get'
 
   export default {
-    props: ["resource", "resourceName", "resourceId", "field"],
+    props: ['index', "resource", "resourceName", "resourceId", "field"],
     methods: {
       get(object, path, defaultValue) {
         return get(object, path, defaultValue);
