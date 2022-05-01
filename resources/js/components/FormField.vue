@@ -21,7 +21,7 @@
           <label for="checkbox">{{ this.field.messageSelectAll }}</label>
         </div>
         <!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
-        <multi-select
+        <MultiSelect
           ref="multiselect"
           @open="() => repositionDropdown(true)"
           :options="options"
@@ -34,7 +34,7 @@
           <template #noResult>{{
             field.multiselectSlots.noResult
           }}</template>
-        </multi-select>
+        </MultiSelect>
       </div>
     </template>
   </DefaultField>
@@ -245,7 +245,7 @@ export default {
 };
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
 <style type="text/css">
 .multiselect__placeholder {
   font-size: 1rem;

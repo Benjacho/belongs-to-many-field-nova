@@ -48,7 +48,6 @@
       }
     },
     mounted() {
-      console.log('!!!!_BELONGS_FIELD', this.field)
       if (this.field.showAsList) {
         console.log(this.field)
       }
