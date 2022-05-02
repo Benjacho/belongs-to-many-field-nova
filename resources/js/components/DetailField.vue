@@ -1,5 +1,5 @@
 <template>
-  <PanelItem :field="field">
+  <PanelItem :field="field" :index="index">
     <template #value>
       <div v-if="field.showAsList">
         <div class="relative rounded-lg bg-white shadow border border-60">
@@ -44,6 +44,7 @@
     props: ['index', "resource", "resourceName", "resourceId", "field"],
     methods: {
       get(object, path, defaultValue) {
+        console.log('!!!!')
         return get(object, path, defaultValue);
       }
     },
