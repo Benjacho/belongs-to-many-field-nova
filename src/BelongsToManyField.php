@@ -78,7 +78,8 @@ class BelongsToManyField extends Field
                 $request->except($attribute);
             }
         });
-        $this->localize();
+	$this->localize();
+	$this->withMeta(['relatableDependencies' => []]);
     }
 
     public function optionsLabel(string $optionsLabel)
@@ -145,6 +146,11 @@ class BelongsToManyField extends Field
     public function setMultiselectSlots($slots)
     {
         return $this->withMeta(['multiselectSlots' => $slots]);
+    }
+
+    public function setRelatableDependencies($fields)
+    {
+        return $this->withMeta(['relatableDependencies' => $fields]);
     }
 
     public function dependsOn($dependsOnField, $tableKey)

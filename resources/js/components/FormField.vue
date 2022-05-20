@@ -66,6 +66,7 @@ export default {
       loading: true,
       selectAll: false,
       debounceTimer: null,
+      relatableDependenciesValues: {},
     };
   },
   mounted() {
@@ -78,6 +79,13 @@ export default {
     if (this.field.dependsOn !== undefined) {
       this.isDependant = true;
       this.registerDependencyWatchers(this.$root);
+    }
+
+    if (Array.isArray(this.field.relatableDependencies) && this.field.relatableDependencies.length) {
+      for (let dependency of this.field.relatableDependencies) {
+        this.relatableDependenciesValues[dependency]=null;
+      }
+      this.registerRelatableDependenciesWatchers(this.$root);
     }
   },
 
@@ -170,11 +178,50 @@ export default {
       });
     },
 
+    registerRelatableDependenciesWatchers(root) {
+      root.$children.forEach((component) => {
+        if (this.componentIsRelatableDependency(component)) {
+          let watchable_component_attribute=this.findWatchableComponentAttributeForRelatableDependency(component);
+
+          if (watchable_component_attribute !== undefined) {
+            let initial_value=component.field.value || null;
+            component.$watch(watchable_component_attribute, (value) => {
+                if (watchable_component_attribute === "selectedResource") {
+                  value = (value && value.value) || null;
+                }
+                this.relatableDependencyWatcher(component.field.attribute, value);
+              }, {
+              immediate: true,
+            });
+            if (component.selectedResourceId !== undefined) {
+              //reset initial_value when using selectedResource attribute
+              initial_value=component.selectedResourceId;
+            }
+            if (component.selectedResource) {
+              initial_value=component.selectedResource.value || null;
+            }
+            this.relatableDependencyWatcher(component.field.attribute, initial_value);
+          }
+        }
+        this.registerRelatableDependenciesWatchers(component);
+      });
+    },
+
     findWatchableComponentAttribute(component) {
       let attribute;
       if (component.field.component === "belongs-to-field") {
         attribute = "selectedResource";
       } else {
+        attribute = "value";
+      }
+      return attribute;
+    },
+
+    findWatchableComponentAttributeForRelatableDependency(component) {
+      let attribute;
+      if (component.selectedResourceId !== undefined) {
+        attribute = "selectedResource";
+      } else if (component.value !== undefined) {
         attribute = "value";
       }
       return attribute;
@@ -187,6 +234,18 @@ export default {
       return component.field.attribute === this.field.dependsOn;
     },
 
+    componentIsRelatableDependency(component) {
+      if (component.field === undefined) {
+        return false;
+      }
+      for (let dependency of this.field.relatableDependencies) {
+        if (component.field.attribute === dependency) {
+          return true;
+        }
+      }
+      return false;
+    },
+
     dependencyWatcher(value) {
       if (value === this.dependsOnValue) {
         return;
@@ -194,6 +253,19 @@ export default {
       this.dependsOnValue = value.value;
       this.fetchOptions();
     },
+
+    relatableDependencyWatcher(attribute, value) {
+      if (this.relatableDependenciesValues[attribute] === value) {
+        return;
+      }
+      this.relatableDependenciesValues[attribute] =  value;
+      this.loading = true;
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.fetchOptions();
+      }, this.field.debounce);
+    },
+
     /*
      * Set the initial, internal value for the field.
      */
@@ -226,6 +298,14 @@ export default {
 
       if (query) {
         qParams.params.search=query;
+      }
+
+      for (let dependency in this.relatableDependenciesValues) {
+        if (this.relatableDependenciesValues[dependency]) {
+          qParams.params[_.camelCase('selected_' + dependency)]=this.relatableDependenciesValues[dependency];
+        } else if (_.camelCase('selected_' + dependency) in qParams.params) {
+          delete qParams.params[_.camelCase('selected_' + dependency)];
+        }
       }
 
       let baseUrl = "/nova-vendor/belongs-to-many-field/";
