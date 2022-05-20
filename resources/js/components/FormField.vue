@@ -27,6 +27,8 @@
           :options="options"
           v-bind="multiSelectProps"
           v-model="value"
+          @[searchChange]="searchableFetchOptions"
+          :loading="loading"
         >
           <template slot="noOptions">{{
             field.multiselectSlots.noOptions
@@ -63,6 +65,8 @@ export default {
       shouldClear: false,
       loading: true,
       selectAll: false,
+      debounceTimer: null,
+      relatableDependenciesValues: {},
     };
   },
   mounted() {
@@ -76,6 +80,13 @@ export default {
       this.isDependant = true;
       this.registerDependencyWatchers(this.$root);
     }
+
+    if (Array.isArray(this.field.relatableDependencies) && this.field.relatableDependencies.length) {
+      for (let dependency of this.field.relatableDependencies) {
+        this.relatableDependenciesValues[dependency]=null;
+      }
+      this.registerRelatableDependenciesWatchers(this.$root);
+    }
   },
 
   computed: {
@@ -87,9 +98,35 @@ export default {
         preselectFirst: false,
         class: this.errorClasses,
         placeholder: this.field.name,
+        internalSearch: ! this.field.searchable,
+        preserveSearch: this.field.searchable,
+        clearOnSelect: ! this.field.searchable,
         ...(this.field.multiselectOptions ? this.field.multiselectOptions : {}),
       };
     },
+
+    /**
+     * Determine if the related resources is searchable
+     */
+    isSearchable() {
+      return this.field.searchable;
+    },
+
+    searchChange: function() {
+      return this.field.searchable ? "search-change" : null;
+    },
+
+    /**
+     * Get the query params for getting available resources
+     */
+    queryParams() {
+      return {
+        params: {
+          resourceId: this.resourceId,
+        },
+      }
+    },
+
   },
   watch: {
     selectAll(value) {
@@ -141,11 +178,50 @@ export default {
       });
     },
 
+    registerRelatableDependenciesWatchers(root) {
+      root.$children.forEach((component) => {
+        if (this.componentIsRelatableDependency(component)) {
+          let watchable_component_attribute=this.findWatchableComponentAttributeForRelatableDependency(component);
+
+          if (watchable_component_attribute !== undefined) {
+            let initial_value=component.field.value || null;
+            component.$watch(watchable_component_attribute, (value) => {
+                if (watchable_component_attribute === "selectedResource") {
+                  value = (value && value.value) || null;
+                }
+                this.relatableDependencyWatcher(component.field.attribute, value);
+              }, {
+              immediate: true,
+            });
+            if (component.selectedResourceId !== undefined) {
+              //reset initial_value when using selectedResource attribute
+              initial_value=component.selectedResourceId;
+            }
+            if (component.selectedResource) {
+              initial_value=component.selectedResource.value || null;
+            }
+            this.relatableDependencyWatcher(component.field.attribute, initial_value);
+          }
+        }
+        this.registerRelatableDependenciesWatchers(component);
+      });
+    },
+
     findWatchableComponentAttribute(component) {
       let attribute;
       if (component.field.component === "belongs-to-field") {
         attribute = "selectedResource";
       } else {
+        attribute = "value";
+      }
+      return attribute;
+    },
+
+    findWatchableComponentAttributeForRelatableDependency(component) {
+      let attribute;
+      if (component.selectedResourceId !== undefined) {
+        attribute = "selectedResource";
+      } else if (component.value !== undefined) {
         attribute = "value";
       }
       return attribute;
@@ -158,6 +234,18 @@ export default {
       return component.field.attribute === this.field.dependsOn;
     },
 
+    componentIsRelatableDependency(component) {
+      if (component.field === undefined) {
+        return false;
+      }
+      for (let dependency of this.field.relatableDependencies) {
+        if (component.field.attribute === dependency) {
+          return true;
+        }
+      }
+      return false;
+    },
+
     dependencyWatcher(value) {
       if (value === this.dependsOnValue) {
         return;
@@ -165,6 +253,19 @@ export default {
       this.dependsOnValue = value.value;
       this.fetchOptions();
     },
+
+    relatableDependencyWatcher(attribute, value) {
+      if (this.relatableDependenciesValues[attribute] === value) {
+        return;
+      }
+      this.relatableDependenciesValues[attribute] =  value;
+      this.loading = true;
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.fetchOptions();
+      }, this.field.debounce);
+    },
+
     /*
      * Set the initial, internal value for the field.
      */
@@ -180,18 +281,38 @@ export default {
       this.fetchOptions();
     },
 
-    fetchOptions() {
+    fetchOptions(query="") {
       if (this.field.options) {
         this.options = this.field.options;
         this.loading = false;
         return;
       }
 
+      if (this.isSearchable && ! query) {
+        //inital empty options and keep previously loaded options
+        this.loading = false;
+        return;
+      }
+
+      let qParams={ ...this.queryParams };
+
+      if (query) {
+        qParams.params.search=query;
+      }
+
+      for (let dependency in this.relatableDependenciesValues) {
+        if (this.relatableDependenciesValues[dependency]) {
+          qParams.params[_.camelCase('selected_' + dependency)]=this.relatableDependenciesValues[dependency];
+        } else if (_.camelCase('selected_' + dependency) in qParams.params) {
+          delete qParams.params[_.camelCase('selected_' + dependency)];
+        }
+      }
+
       let baseUrl = "/nova-vendor/belongs-to-many-field/";
       if (this.isDependant) {
         if (this.dependsOnValue) {
           this.loading = true;
-          Nova.request(
+          Nova.request().get(
             baseUrl +
               this.resourceName +
               "/" +
@@ -202,7 +323,8 @@ export default {
               "/" +
               this.dependsOnValue +
               "/" +
-              this.field.dependsOnKey
+              this.field.dependsOnKey,
+            qParams
           ).then((data) => {
             this.options = data.data;
             this.loading = false;
@@ -212,19 +334,28 @@ export default {
           this.loading = false;
         }
       } else {
-        Nova.request(
+        Nova.request().get(
           baseUrl +
             this.resourceName +
             "/" +
             "options/" +
             this.field.attribute +
             "/" +
-            this.optionsLabel
+            this.optionsLabel,
+          qParams
         ).then((data) => {
           this.options = data.data;
           this.loading = false;
         });
       }
+    },
+
+    searchableFetchOptions (query) {
+      this.loading = true;
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.fetchOptions(query);
+      }, this.field.debounce);
     },
 
     /**

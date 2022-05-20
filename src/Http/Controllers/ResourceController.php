@@ -19,6 +19,14 @@ class ResourceController
 
         $queryResult = $field->resourceClass::relatableQuery($request, $query);
 
+        if ($request->search) {
+            $withTrashed = false;
+            $associatedResource=$field->resourceClass;
+            $limit = $associatedResource::$relatableSearchResults;
+            $queryResult = $associatedResource::buildIndexQuery($request, $queryResult, $request->search, [], [], $withTrashed)
+                ->take($limit);
+        }
+
         if ($dependsOnValue) {
             $queryResult = $queryResult->where($dependsOnKey, $dependsOnValue);
         }
