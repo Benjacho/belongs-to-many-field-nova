@@ -1,6 +1,10 @@
 # Belongs To Many Field Nova With Dependant
 
-Belongs To Many field to represent many to many relationship in field. This Field allow attaching relationships easily.
+Belongs To Many field to represent a many to many relationship in just a field. This field allow attaching relationships easily.
+
+- Use version 3 for Nova 4
+- Use version 2 for Nova 3
+
 Also you can:
 
 - Pass query to the multiple select
@@ -145,3 +149,17 @@ This package come with the following translation for the vue-multiselect plugin.
 To translate validations use Laravel validation translations.
 
 Credits to: https://github.com/manmohanjit/nova-belongs-to-dependency
+
+
+### TODO
+
+This project was my first Open Source project, so I wanted to add a roadmap. 
+
+I migrated this package to use Nova 4, this migration considered only the detail, index and form views. It means that it can have bugs with other features. 
+
+- Add Tests to the Project, adding test will add a certain level of quality code. Also it will help to achieve the other features.
+- Test all functions implemented and improve wiki.
+- Implement native dependability from Nova, this considers only to have dependsOn a BelongsTo field
+- Implement translations with Spatie Translatable to es, fr, de
+- Support for inline creation via native Nova 4
+- builtin theme inherited from nova theme

@@ -1,6 +1,6 @@
 <template>
-  <default-field :field="field" :errors="errors" :show-help-text="true">
-    <template slot="field">
+  <DefaultField :field="field" :errors="errors" :show-help-text="true">
+    <template #field>
       <div
         :style="{ height: field.height ? field.height : 'auto' }"
         class="relative"
@@ -9,7 +9,7 @@
           v-if="loading"
           class="py-6 px-8 flex justify-center items-center absolute pin z-50 bg-white"
         >
-          <loader class="text-60" />
+          <Loader class="text-60" />
         </div>
         <div v-if="this.field.selectAll" class="mb-2">
           <input
@@ -21,7 +21,7 @@
           <label for="checkbox">{{ this.field.messageSelectAll }}</label>
         </div>
         <!--          <label v-if="this.field.selectAll"><input type="checkbox" class="checkbox mb-2 mr-2">{{this.field.messageSelectAll}}</label>-->
-        <multi-select
+        <MultiSelect
           ref="multiselect"
           @open="() => repositionDropdown(true)"
           :options="options"
@@ -34,16 +34,15 @@
           <template slot="noResult">{{
             field.multiselectSlots.noResult
           }}</template>
-        </multi-select>
+        </MultiSelect>
       </div>
     </template>
-  </default-field>
+  </DefaultField>
 </template>
 
 <script>
 import { FormField, HandlesValidationErrors } from "laravel-nova";
 import MultiSelect from "vue-multiselect";
-import get from "lodash.get";
 
 export default {
   mixins: [FormField, HandlesValidationErrors],
@@ -82,7 +81,7 @@ export default {
     multiSelectProps() {
       return {
         multiple: true,
-        customLabel: (el) => get(el, this.optionsLabel),
+        customLabel: (el) => _.get(el, this.optionsLabel),
         trackBy: this.trackBy,
         preselectFirst: false,
         class: this.errorClasses,
@@ -175,7 +174,7 @@ export default {
       this.trackBy = this.field.trackBy ? this.field.trackBy : "id";
       this.value = this.field.value.map((el) => ({
         ...el,
-        [this.optionsLabel]: get(el, this.optionsLabel),
+        [this.optionsLabel]: _.get(el, this.optionsLabel),
       }));
       this.fetchOptions();
     },
@@ -245,8 +244,15 @@ export default {
 };
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
 <style type="text/css">
+.multiselect{
+  justify-content: normal !important;
+}
+.multiselect__tags{
+  border:none !important;
+}
+
 .multiselect__placeholder {
   font-size: 1rem;
   color: var(--70) !important;

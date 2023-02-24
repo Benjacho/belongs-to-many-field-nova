@@ -180,7 +180,7 @@ class BelongsToManyField extends Field
         }
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize() : array
     {
         $this->resolveOptions();
 
@@ -204,6 +204,7 @@ class BelongsToManyField extends Field
             'textAlign' => $this->textAlign,
             'value' => $this->value,
             'viewable' => $this->viewable,
+            'visible' => $this->visible,
             'validationKey' => $this->validationKey(),
         ], $this->meta());
     }
