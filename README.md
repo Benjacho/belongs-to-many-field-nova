@@ -144,7 +144,7 @@ php artisan vendor:publish --provider="Benjacho\BelongsToManyField\FieldServiceP
 
 This package come with the following translation for the vue-multiselect plugin.
 
-- en, ru.
+- en, ru, and nl.
 
 To translate validations use Laravel validation translations.
 
