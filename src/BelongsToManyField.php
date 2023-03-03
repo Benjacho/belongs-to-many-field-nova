@@ -168,15 +168,10 @@ class BelongsToManyField extends Field
 
     public function resolve($resource, $attribute = null)
     {
-        if ($this->isAction) {
-            parent::resolve($resource, $attribute);
-        } else {
-            parent::resolve($resource, $attribute);
-            $value = json_decode($resource->{$this->attribute});
-
-            if ($value) {
-                $this->value = $value;
-            }
+        parent::resolve($resource, $attribute);
+        
+        if (!$this->isAction) {
+            $this->value = $this->getValue($resource);
         }
     }
 
@@ -245,6 +240,33 @@ class BelongsToManyField extends Field
     protected function getNoResultSlot()
     {
         return __('belongs-to-many-field-nova::vue-multiselect.no_result');
+    }
+
+    protected function getValue($resource)
+    {
+        $value = json_decode($resource->{$this->attribute});
+
+        // check if is translatable by checking first item
+        // and return value including translated field
+        if ($value && $this->value->count()) {
+            $optionsLabel = $this->meta['optionsLabel'];
+            $translatable = $this->value->first()->translatable;
+            if (is_array($translatable) && in_array($optionsLabel, $translatable)) {
+                $newValue = [];
+                foreach ($value as $item) {
+                    $item->{$optionsLabel} = $item->{$optionsLabel}->{app()->getLocale()};
+                    $newValue[] = $item;
+                }
+
+                return $newValue;
+            }
+        }
+            
+        if ($value) {
+            return $value;
+        }
+
+        return $this->value;
     }
 
     private function resolveOptions(): void
