@@ -88,7 +88,7 @@ class BelongsToManyField extends Field
     {
         $this->label = $optionsLabel;
 
-        return $this->withMeta(['optionsLabel' => $this->label]);
+        return $this->withMeta(['withLabel' => $this->label]);
     }
 
     public function trackBy(string $trackBy)
